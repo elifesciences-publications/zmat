@@ -32,6 +32,7 @@ public class CyFileParser extends zmat.sessionparser.FileParser {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+            @SuppressWarnings("unchecked")
             ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
             Queue<CyTrial> currentTrials = new LinkedList<>();
             Queue<CySession> sessions = new LinkedList<>();

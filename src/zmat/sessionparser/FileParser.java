@@ -31,6 +31,7 @@ public class FileParser {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+            @SuppressWarnings("unchecked")
             ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
             Queue<Trial> currentTrials = new LinkedList<>();
             Queue<Session> sessions = new LinkedList<>();
