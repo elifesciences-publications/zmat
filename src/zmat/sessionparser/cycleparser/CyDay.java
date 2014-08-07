@@ -7,14 +7,12 @@ package zmat.sessionparser.cycleparser;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import zmat.sessionparser.Session;
-import zmat.sessionparser.Trial;
 
 /**
  *
  * @author Xiaoxing
  */
-public class CyDay extends zmat.sessionparser.Day {
+public class CyDay extends zmat.sessionparser.Day<CySession> {
 
     protected CyDay(String fileName, Queue<CySession> q) {
         super(fileName, q);
@@ -24,12 +22,13 @@ public class CyDay extends zmat.sessionparser.Day {
     private void combineSessions() {
         removeBadSessions(12, true, 3);
         LinkedList<CyTrial> q = new LinkedList<>();
-        for (Session s : sessions) {
-            for (Trial t : s.getTrails()) {
-                q.add((CyTrial) t);
+        for (CySession s : sessions) {
+            for (CyTrial t : s.getTrails()) {
+                q.add(t);
             }
         }
-        sessions = new Session[]{new CySession(q)};
+        sessions = new LinkedList<>();
+        sessions.add(new CySession(q));
     }
 
 }

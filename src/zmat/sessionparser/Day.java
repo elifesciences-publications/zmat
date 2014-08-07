@@ -13,41 +13,35 @@ import java.util.Queue;
  *
  * @author Libra
  */
-public class Day {
+public class Day<T extends Session> {
 
-    protected Session[] sessions;
+    protected Queue<T> sessions;
     protected String fileName;
 
-    protected <T extends Session> Day(String fileName, Queue<T> q) {
+    protected Day(String fileName, Queue<T> q) {
         this.fileName = fileName;
-        sessions = new Session[q.size()];
-        for (int i = 0; i < sessions.length; i++) {
-            sessions[i] = q.poll();
-        }
+        sessions = q;
     }
 
     public void removeBadSessions(int trialNum, boolean fullSession, int lickCount) {
-        Queue<Session> q = new LinkedList<>();
-        for (Session session : sessions) {
+        Queue<T> q = new LinkedList<>();
+        for (T session : sessions) {
             boolean sessionFull = (fullSession && session.getTrialNumber() == trialNum) || !fullSession;
             if (sessionFull && session.getLickCount() >= lickCount) {
                 q.offer(session);
             }
         }
-        sessions = new Session[q.size()];
-        for (int i = 0; i < sessions.length; i++) {
-            sessions[i] = q.poll();
-        }
+        sessions = q;
     }
 
     public int getSessionNumber() {
-        return sessions.length;
+        return sessions.size();
     }
 
     public List<int[]> getCorrectRates() {
         List<int[]> correctRates = new ArrayList<>();
 //        System.out.println(sessions.length+"Sessions ");
-        for (Session session : sessions) {
+        for (T session : sessions) {
             correctRates.add(session.getCorrectRate());
         }
         return correctRates;
@@ -55,7 +49,7 @@ public class Day {
 
     public List<int[]> getFalseAlarmRates() {
         List<int[]> falseAlarms = new ArrayList<>();
-        for (Session session : sessions) {
+        for (T session : sessions) {
             falseAlarms.add(session.getFalseAlarmRate());
         }
         return falseAlarms;
@@ -63,7 +57,7 @@ public class Day {
 
     public List<int[]> getMissRates() {
         List<int[]> falseAlarms = new ArrayList<>();
-        for (Session session : sessions) {
+        for (T session : sessions) {
             falseAlarms.add(session.getMissRate());
         }
         return falseAlarms;

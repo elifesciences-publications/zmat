@@ -7,13 +7,12 @@ package zmat.sessionparser.cycleparser;
 
 import java.util.Queue;
 import zmat.sessionparser.Session;
-import zmat.sessionparser.Trial;
 
 /**
  *
  * @author Xiaoxing
  */
-public class CySession extends zmat.sessionparser.Session {
+public class CySession extends zmat.sessionparser.Session<CyTrial> {
 
     protected CySession(Queue<CyTrial> q) {
         super(q);
@@ -23,8 +22,8 @@ public class CySession extends zmat.sessionparser.Session {
     protected int[] getRate(Session.RateType type) {
         int[] match = new int[13];
         int[] sum = new int[13];
-        for (Trial trial : trials) {
-            int typeIndex = ((CyTrial) trial).getTypeIndex();
+        for (CyTrial trial : trials) {
+            int typeIndex = trial.getTypeIndex();
             sum[typeIndex]++;
             match[typeIndex] += getTypeRate(trial, type);
         }

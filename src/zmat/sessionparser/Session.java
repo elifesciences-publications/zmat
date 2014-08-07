@@ -11,23 +11,20 @@ import java.util.Queue;
  *
  * @author Libra
  */
-public class Session {
+public class Session<T extends Trial> {
 
-    protected Queue<Trial> trials;
+    protected Queue<T> trials;
 
-    public Session(Queue<? extends Trial> q) {
-        trials=new LinkedList<>();
+    public Session(Queue<T> q) {
+        trials = new LinkedList<>();
         trials.addAll(q);
     }
-
-
-
 
     public int getTrialNumber() {
         return trials.size();
     }
 
-    protected int getTypeRate(Trial trial, RateType type) {
+    protected int getTypeRate(T trial, RateType type) {
         switch (type) {
             case performance:
                 return trial.isGoodChoice() ? 100 : 0;
@@ -44,7 +41,7 @@ public class Session {
         int countLaserOn = 0;
         int correctLaserOff = 0;
         int countLaserOff = 0;
-        for (Trial trial : trials) {
+        for (T trial : trials) {
             if (trial.withLaserON()) {
                 countLaserOn++;
                 correctLaserOn += getTypeRate(trial, type);
@@ -71,7 +68,7 @@ public class Session {
 
     public int getLickCount() {
         int lickCount = 0;
-        for (Trial trail : trials) {
+        for (T trail : trials) {
             switch (trail.getResponse()) {
                 case Hit:
                     lickCount++;
@@ -95,7 +92,7 @@ public class Session {
         performance, falseAlarm, miss;
     }
 
-    public Queue<Trial> getTrails() {
+    public Queue<T> getTrails() {
         return trials;
     }
 
