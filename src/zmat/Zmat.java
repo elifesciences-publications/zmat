@@ -26,6 +26,14 @@ public class Zmat {
     public Zmat() {
         System.out.println("zmat ver 1.1");
     }
+    
+    public int[][] ser2mat(String s){
+        return (new zmat.sessionparser.FileParser()).getRawMat(s);
+    }
+    
+    public void mat2ser(int[][] mat, String pathToFile){
+        (new zmat.sessionparser.FileParser()).mat2ser(mat, pathToFile);
+    }
 
     public void processFile(String... s) {
         dp = new DataProcessor();

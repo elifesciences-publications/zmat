@@ -6,9 +6,12 @@ package zmat.sessionparser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -25,6 +28,7 @@ public class FileParser {
         for (String path : s) {
             days.add(new Day(path, processProcessFile(new File(path))));
         }
+//        System.out.println(Integer.toString(days.size())+" days.");
     }
 
     protected Queue<? extends Session> processProcessFile(File f) {
@@ -44,12 +48,14 @@ public class FileParser {
                 switch (evt[2]) {
                     case 61:
                         switch (evt[3]) {
-                            case 1:
-                                currentTrials = new LinkedList<>();
-                                break;
+//                            case 1:
+//                                currentTrials = new LinkedList<>();
+//                                break;
                             case 0:
                                 if (currentTrials.size() > 0) {
+//                                    System.out.println(evt[0]);
                                     sessions.offer(new Session(currentTrials));
+                                    currentTrials=new LinkedList<>();
                                 }
                                 break;
                         }
@@ -84,6 +90,7 @@ public class FileParser {
             if (currentTrials.size() > 0) {
                 sessions.offer(new Session(currentTrials));
             }
+//            System.out.println(Integer.toString(sessions.size())+" sessions");
             return sessions;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.toString());
@@ -93,5 +100,32 @@ public class FileParser {
 
     public Queue<Day> getDays() {
         return days;
+    }
+
+    public int[][] getRawMat(String s) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(s)))) {
+            @SuppressWarnings("unchecked")
+            ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
+            return eventList.toArray(new int[eventList.size()][]);
+        } catch (ClassNotFoundException | IOException ex) {
+            System.out.println(ex.toString());
+        }
+        return new int[0][0];
+    }
+
+    public void mat2ser(int[][] mat, String pathToFile) {
+        
+        File targetFile = new File(pathToFile);
+        File parent = targetFile.getParentFile();
+        ArrayList<int[]> l=new ArrayList<>();
+        l.addAll(Arrays.asList(mat));
+        if (!parent.exists() && !parent.mkdirs()) {
+            throw new IllegalStateException("Couldn't create dir: " + parent);
+        }
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(targetFile))) {
+            out.writeObject(l);
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
     }
 }

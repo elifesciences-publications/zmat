@@ -50,6 +50,11 @@ public class Session<T extends Trial> {
                 correctLaserOff += getTypeRate(trial, type);
             }
         }
+        if (countLaserOff == 0) {
+            return (new int[]{correctLaserOn / countLaserOn, -1});
+        } else if (countLaserOn == 0) {
+            return (new int[]{-1, correctLaserOff / countLaserOff});
+        }
 
         return (new int[]{correctLaserOn / countLaserOn, correctLaserOff / countLaserOff});
     }

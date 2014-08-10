@@ -50,6 +50,7 @@ public class DataProcessor {
         for (Day d : days) {
             d.removeBadSessions(20, true, minLick);
         }
+        
     }
 
     public int[][] processList(DataProcessor.listType type) {

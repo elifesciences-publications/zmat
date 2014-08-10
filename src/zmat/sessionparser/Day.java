@@ -26,12 +26,16 @@ public class Day<T extends Session> {
     public void removeBadSessions(int trialNum, boolean fullSession, int lickCount) {
         Queue<T> q = new LinkedList<>();
         for (T session : sessions) {
+//            System.out.println(session.getTrialNumber()+" trials");
             boolean sessionFull = (fullSession && session.getTrialNumber() == trialNum) || !fullSession;
             if (sessionFull && session.getLickCount() >= lickCount) {
                 q.offer(session);
+//                System.out.println("add Session");
             }
         }
         sessions = q;
+        System.out.println(Integer.toString(sessions.size()) + " sessions.");
+
     }
 
     public int getSessionNumber() {

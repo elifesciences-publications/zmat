@@ -26,7 +26,7 @@ public class CyFileParser extends zmat.sessionparser.FileParser {
             days.add(new CyDay(path, processProcessFile(new File(path))));
         }
     }
-    
+
     @Override
     protected Queue<CySession> processProcessFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
@@ -48,12 +48,13 @@ public class CyFileParser extends zmat.sessionparser.FileParser {
                 switch (evt[2]) {
                     case 61:
                         switch (evt[3]) {
-                            case 1:
-                                currentTrials = new LinkedList<>();
-                                break;
+//                            case 1:
+//                                currentTrials = new LinkedList<>();
+//                                break;
                             case 0:
                                 if (currentTrials.size() > 0) {
                                     sessions.offer(new CySession(currentTrials));
+                                    currentTrials = new LinkedList<>();
                                 }
                                 break;
                         }
@@ -69,8 +70,8 @@ public class CyFileParser extends zmat.sessionparser.FileParser {
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
                         laserOn = false;
-                        delayLength=0;
-                        laserType=0;
+                        delayLength = 0;
+                        laserType = 0;
                         break;
                     case 9:
                     case 10:
