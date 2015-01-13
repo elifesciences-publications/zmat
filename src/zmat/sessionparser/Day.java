@@ -12,13 +12,14 @@ import java.util.Queue;
 /**
  *
  * @author Libra
+ * @param <T>
  */
-public class Day<T extends Session> {
+public class Day<T extends Session>{
 
     protected Queue<T> sessions;
     protected String fileName;
 
-    protected Day(String fileName, Queue<T> q) {
+    public Day(String fileName, Queue<T> q) {
         this.fileName = fileName;
         sessions = q;
     }
@@ -71,4 +72,14 @@ public class Day<T extends Session> {
         return fileName;
     }
 
+    public int[] getHitNFalse() {
+        int hit = 0;
+        int fa = 0;
+        for (Session s : sessions) {
+            int[] sCount = s.getHitNFalse();
+            hit += sCount[0];
+            fa += sCount[1];
+        }
+        return new int[]{hit, fa};
+    }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser;
+package zmat.sessionparser.quarterparser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,18 +26,17 @@ public class FileParser {
     public void parseFiles(String... s) {
         days = new LinkedList<>();
         for (String path : s) {
-            days.add(new Day(path, processFile(new File(path))));
+            days.add(new Day(path, processProcessFile(new File(path))));
         }
     }
-
-    protected Queue<? extends Session> processFile(File f) {
+   private Queue<Session> processProcessFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-            @SuppressWarnings("unchecked")
             ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
             Queue<Trial> currentTrials = new LinkedList<>();
             Queue<Session> sessions = new LinkedList<>();
+            int laserType = -1;
             EventType firstOdor = EventType.unknown;
             EventType secondOdor = EventType.unknown;
             boolean laserOn = false;
@@ -47,14 +46,12 @@ public class FileParser {
                 switch (evt[2]) {
                     case 61:
                         switch (evt[3]) {
-//                            case 1:
-//                                currentTrials = new LinkedList<>();
-//                                break;
+                            case 1:
+                                currentTrials = new LinkedList<>();
+                                break;
                             case 0:
                                 if (currentTrials.size() > 0) {
-//                                    System.out.println(evt[0]);
                                     sessions.offer(new Session(currentTrials));
-                                    currentTrials = new LinkedList<>();
                                 }
                                 break;
                         }
@@ -64,9 +61,10 @@ public class FileParser {
                     case 6:
                     case 7:
                         response = responses[evt[2] - 4];
-                        if (firstOdor != null && secondOdor != null) {
-                            currentTrials.offer(new Trial(firstOdor, secondOdor, response, laserOn));
+                        if (laserType != -1 && firstOdor != null && secondOdor != null) {
+                            currentTrials.offer(new Trial(laserType, firstOdor, secondOdor, response, laserOn));
                         }
+                        laserType = -1;
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
                         laserOn = false;
@@ -84,12 +82,23 @@ public class FileParser {
                     case 65:
                         laserOn = (evt[3] == 1);
                         break;
+                    case 58:
+                        switch (evt[3]) {
+                            case 10:
+                                laserType = 0;
+                                break;
+                            case 91:
+                            case 92:
+                            case 93:
+                            case 94:
+                                laserType = evt[3] - 90;
+                        }
+                        break;
                 }
             }
             if (currentTrials.size() > 0) {
                 sessions.offer(new Session(currentTrials));
             }
-//            System.out.println(Integer.toString(sessions.size())+" sessions");
             return sessions;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.toString());

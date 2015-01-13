@@ -10,6 +10,7 @@ import java.util.Queue;
 /**
  *
  * @author Libra
+ * @param <T>
  */
 public class Session<T extends Trial> {
 
@@ -36,6 +37,18 @@ public class Session<T extends Trial> {
         return 0;
     }
 
+    protected int getTypeBaseRate(T trial, RateType type) {
+        switch (type) {
+            case performance:
+                return 1;
+            case falseAlarm:
+                return (trial.response==EventType.FalseAlarm || trial.response==EventType.CorrectRejection) ? 1 : 0;
+            case miss:
+                return (trial.response==EventType.Hit || trial.response==EventType.Miss) ? 1 : 0;
+        }
+        return 0;
+    }
+
     protected int[] getRate(RateType type) {
         int correctLaserOn = 0;
         int countLaserOn = 0;
@@ -43,10 +56,10 @@ public class Session<T extends Trial> {
         int countLaserOff = 0;
         for (T trial : trials) {
             if (trial.withLaserON()) {
-                countLaserOn++;
+                countLaserOn+=getTypeBaseRate(trial,type);
                 correctLaserOn += getTypeRate(trial, type);
             } else {
-                countLaserOff++;
+                countLaserOff+=getTypeBaseRate(trial,type);
                 correctLaserOff += getTypeRate(trial, type);
             }
         }
@@ -55,7 +68,6 @@ public class Session<T extends Trial> {
         } else if (countLaserOn == 0) {
             return (new int[]{-1, correctLaserOff / countLaserOff});
         }
-
         return (new int[]{correctLaserOn / countLaserOn, correctLaserOff / countLaserOff});
     }
 
@@ -64,6 +76,7 @@ public class Session<T extends Trial> {
     }
 
     public int[] getFalseAlarmRate() {
+//        System.out.println(Arrays.toString(getRate(RateType.falseAlarm)));
         return getRate(RateType.falseAlarm);
     }
 
@@ -99,6 +112,22 @@ public class Session<T extends Trial> {
 
     public Queue<T> getTrails() {
         return trials;
+    }
+
+    public int[] getHitNFalse() {
+        int hit = 0;
+        int fa = 0;
+        for (Trial t : trials) {
+            switch (t.response) {
+                case Hit:
+                    hit++;
+                    break;
+                case FalseAlarm:
+                    fa++;
+                    break;
+            }
+        }
+        return new int[]{hit, fa};
     }
 
 }

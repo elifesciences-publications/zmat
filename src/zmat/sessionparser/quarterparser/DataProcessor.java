@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser;
+package zmat.sessionparser.quarterparser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class DataProcessor {
             System.out.println("No suitable records found.");
         }
         for (Day d : days) {
-            d.removeBadSessions(20, true, minLick);
+            d.removeBadSessions(true, minLick);
         }
 
     }
@@ -64,17 +64,6 @@ public class DataProcessor {
             intValues[idx++] = value;
         }
         return intValues;
-    }
-
-    public int[] getHitNFalse() {
-        int hit = 0;
-        int fa = 0;
-        for (Day d : days) {
-            int[] hNf = d.getHitNFalse();
-            hit += hNf[0];
-            fa += hNf[1];
-        }
-        return new int[]{hit, fa};
     }
 
     public Queue<? extends Day> getDays() {
