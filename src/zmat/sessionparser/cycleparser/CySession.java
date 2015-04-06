@@ -19,6 +19,11 @@ public class CySession extends zmat.sessionparser.Session<CyTrial> {
     }
 
     @Override
+    public Session getInstance(Queue<CyTrial> q) {
+        return new CySession(q); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
     protected int[] getRate(Session.RateType type) {
         int[] match = new int[13];
         int[] sum = new int[13];

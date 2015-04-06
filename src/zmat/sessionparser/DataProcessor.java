@@ -17,12 +17,17 @@ public class DataProcessor {
 
     protected Queue<? extends Day> days;
     protected int minLick = 16;
+    final private Session sessionFactory;
 
     public enum listType {
 
         CORRECT_RATE, FALSE_ALARM, MISS;
     }
 
+    public DataProcessor(Session s){
+        this.sessionFactory=s;
+    }
+    
     public void setMinLick(int minLick) {
         this.minLick = minLick;
     }
@@ -41,7 +46,7 @@ public class DataProcessor {
     }
 
     public void processFile(String... s) {
-        FileParser fp = new FileParser();
+        FileParser fp = new FileParser(sessionFactory);
         fp.parseFiles(s);
         days = fp.getDays();
         if (days.size() < 1) {

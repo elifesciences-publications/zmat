@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import zmat.sessionparser.EventType;
+import zmat.sessionparser.Session;
 
 /**
  *
@@ -26,6 +27,12 @@ public class CyFileParser extends zmat.sessionparser.FileParser {
             days.add(new CyDay(path, processFile(new File(path))));
         }
     }
+
+    public CyFileParser(CySession s) {
+        super(s);
+    }
+    
+    
 
     @Override
     protected Queue<CySession> processFile(File f) {

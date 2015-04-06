@@ -21,6 +21,10 @@ public class Session<T extends Trial> {
         trials.addAll(q);
     }
 
+    public Session getInstance(Queue<T> q) {
+        return new Session(q);
+    }
+
     public int getTrialNumber() {
         return trials.size();
     }
@@ -42,9 +46,9 @@ public class Session<T extends Trial> {
             case performance:
                 return 1;
             case falseAlarm:
-                return (trial.response==EventType.FalseAlarm || trial.response==EventType.CorrectRejection) ? 1 : 0;
+                return (trial.response == EventType.FalseAlarm || trial.response == EventType.CorrectRejection) ? 1 : 0;
             case miss:
-                return (trial.response==EventType.Hit || trial.response==EventType.Miss) ? 1 : 0;
+                return (trial.response == EventType.Hit || trial.response == EventType.Miss) ? 1 : 0;
         }
         return 0;
     }
@@ -56,10 +60,10 @@ public class Session<T extends Trial> {
         int countLaserOff = 0;
         for (T trial : trials) {
             if (trial.withLaserON()) {
-                countLaserOn+=getTypeBaseRate(trial,type);
+                countLaserOn += getTypeBaseRate(trial, type);
                 correctLaserOn += getTypeRate(trial, type);
             } else {
-                countLaserOff+=getTypeBaseRate(trial,type);
+                countLaserOff += getTypeBaseRate(trial, type);
                 correctLaserOff += getTypeRate(trial, type);
             }
         }

@@ -13,7 +13,7 @@ import java.util.Queue;
  *
  * @author Xiaoxing
  */
-public class DataProcessor {
+public class DataProcessor<S extends Session> {
 
     protected Queue<? extends Day> days;
     protected int minLick = 16;

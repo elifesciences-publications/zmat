@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import zmat.sessionparser.DataProcessor;
 import zmat.sessionparser.Day;
+import zmat.sessionparser.Session;
 
 /**
  *
@@ -100,7 +101,7 @@ public class Zmat {
     }
 
     public void processFile(String... s) {
-        dp = new DataProcessor();
+        dp = new DataProcessor(new Session(null));
         dp.setMinLick(this.minLick);
         dp.processFile(s);
     }

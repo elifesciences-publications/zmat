@@ -12,21 +12,21 @@ import java.util.Queue;
 /**
  *
  * @author Libra
- * @param <T>
+ * @param <S>
  */
-public class Day<T extends Session>{
+public class Day<S extends Session>{
 
-    protected Queue<T> sessions;
+    protected Queue<S> sessions;
     protected String fileName;
 
-    public Day(String fileName, Queue<T> q) {
+    public Day(String fileName, Queue<S> q) {
         this.fileName = fileName;
         sessions = q;
     }
 
     public void removeBadSessions(int trialNum, boolean fullSession, int lickCount) {
-        Queue<T> q = new LinkedList<>();
-        for (T session : sessions) {
+        Queue<S> q = new LinkedList<>();
+        for (S session : sessions) {
 //            System.out.println(session.getTrialNumber()+" trials");
             boolean sessionFull = (fullSession && session.getTrialNumber() == trialNum) || !fullSession;
             if (sessionFull && session.getLickCount() >= lickCount) {
@@ -46,7 +46,7 @@ public class Day<T extends Session>{
     public List<int[]> getCorrectRates() {
         List<int[]> correctRates = new ArrayList<>();
 //        System.out.println(sessions.length+"Sessions ");
-        for (T session : sessions) {
+        for (S session : sessions) {
             correctRates.add(session.getCorrectRate());
         }
         return correctRates;
@@ -54,7 +54,7 @@ public class Day<T extends Session>{
 
     public List<int[]> getFalseAlarmRates() {
         List<int[]> falseAlarms = new ArrayList<>();
-        for (T session : sessions) {
+        for (S session : sessions) {
             falseAlarms.add(session.getFalseAlarmRate());
         }
         return falseAlarms;
@@ -62,7 +62,7 @@ public class Day<T extends Session>{
 
     public List<int[]> getMissRates() {
         List<int[]> falseAlarms = new ArrayList<>();
-        for (T session : sessions) {
+        for (S session : sessions) {
             falseAlarms.add(session.getMissRate());
         }
         return falseAlarms;

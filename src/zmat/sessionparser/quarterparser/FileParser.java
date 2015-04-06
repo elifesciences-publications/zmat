@@ -29,7 +29,8 @@ public class FileParser {
             days.add(new Day(path, processProcessFile(new File(path))));
         }
     }
-   private Queue<Session> processProcessFile(File f) {
+
+    private Queue<Session> processProcessFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
@@ -60,9 +61,11 @@ public class FileParser {
                     case 5:
                     case 6:
                     case 7:
+//                        System.out.println("Response");
                         response = responses[evt[2] - 4];
                         if (laserType != -1 && firstOdor != null && secondOdor != null) {
                             currentTrials.offer(new Trial(laserType, firstOdor, secondOdor, response, laserOn));
+//                            System.out.println("Session+");
                         }
                         laserType = -1;
                         firstOdor = EventType.unknown;
@@ -92,12 +95,21 @@ public class FileParser {
                             case 93:
                             case 94:
                                 laserType = evt[3] - 90;
+                                break;
+                            case 121:
+                            case 122:
+                            case 123:
+                            case 124:
+                                laserType = evt[3] - 120;
+                                break;
+
                         }
                         break;
                 }
             }
             if (currentTrials.size() > 0) {
                 sessions.offer(new Session(currentTrials));
+//                System.out.println("Session+");
             }
             return sessions;
         } catch (IOException | ClassNotFoundException e) {

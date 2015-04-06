@@ -13,9 +13,11 @@ import zmat.sessionparser.*;
  */
 public class CyDataProcessor extends zmat.sessionparser.DataProcessor{
 
+    
+    
     @Override
     public void processFile(String... s) {
-        FileParser fp = new CyFileParser();
+        FileParser fp = new CyFileParser(new CySession(null));
         fp.parseFiles(s);
         days = fp.getDays();
         if (days.size() < 1) {
