@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser;
+package zmat.dnms_session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +15,17 @@ import java.util.Queue;
  */
 public class DataProcessor {
 
-    protected Queue<? extends Day> days;
+    protected Queue<Day> days;
     protected int minLick = 16;
-    final private Session sessionFactory;
+    
 
     public enum listType {
 
         CORRECT_RATE, FALSE_ALARM, MISS;
     }
 
-    public DataProcessor(Session s){
-        this.sessionFactory=s;
-    }
-    
+
+
     public void setMinLick(int minLick) {
         this.minLick = minLick;
     }
@@ -46,7 +44,7 @@ public class DataProcessor {
     }
 
     public void processFile(String... s) {
-        FileParser fp = new FileParser(sessionFactory);
+        FileParser fp = new FileParser();
         fp.parseFiles(s);
         days = fp.getDays();
         if (days.size() < 1) {
@@ -71,15 +69,34 @@ public class DataProcessor {
         return intValues;
     }
 
-    public int[] getHitNFalse() {
+    public int[] getHitFalseMiss(boolean lightOn) {
         int hit = 0;
         int fa = 0;
+        int miss = 0;
+        int totalTrial = 0;
         for (Day d : days) {
-            int[] hNf = d.getHitNFalse();
-            hit += hNf[0];
-            fa += hNf[1];
+            for (Session s : d.sessions) {
+                for (Trial t : s.trials) {
+                    if (t.withLaserON() == lightOn) {
+                        totalTrial++;
+                        switch (t.response) {
+                            case Hit:
+                                hit++;
+                                break;
+                            case FalseAlarm:
+                                fa++;
+                                break;
+                            case Miss:
+                                miss++;
+                                break;
+                        }
+                    }
+                }
+                
+                
+            }
         }
-        return new int[]{hit, fa};
+        return new int[]{hit, fa, miss, totalTrial};
     }
 
     public Queue<? extends Day> getDays() {

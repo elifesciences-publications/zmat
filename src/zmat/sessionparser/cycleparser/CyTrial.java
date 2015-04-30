@@ -4,13 +4,13 @@
  */
 package zmat.sessionparser.cycleparser;
 
-import zmat.sessionparser.EventType;
+import zmat.dnms_session.EventType;
 
 /**
  *
  * @author Libra
  */
-public class CyTrial extends zmat.sessionparser.Trial {
+public class CyTrial extends zmat.dnms_session.Trial {
 
     private int delayLength;
     private int laserType;

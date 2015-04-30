@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import zmat.dnms_session.Session;
 
 /**
  *
@@ -49,7 +50,7 @@ public class MergeTools {
     public void mergeFile(String f1, int start1, int length1, String f2, int start2, int length2, int timeDiff, String f) {
         s1 = file2list(f1);
         s2 = file2list(f2);
-        zmat.sessionparser.FileParser fp = new zmat.sessionparser.FileParser();
+        zmat.dnms_session.FileParser fp = new zmat.dnms_session.FileParser();
         fp.arrayList2ser(mergeSessions(start1, length1, start2, length2, timeDiff), f);
     }
 

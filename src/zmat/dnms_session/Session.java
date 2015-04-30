@@ -2,26 +2,27 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser;
+package zmat.dnms_session;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- *
  * @author Libra
- * @param <T>
  */
-public class Session<T extends Trial> {
+public class Session {
 
-    protected Queue<T> trials;
+    protected Queue<Trial> trials;
 
-    public Session(Queue<T> q) {
+    public Session(Queue<Trial> q) {
         trials = new LinkedList<>();
         trials.addAll(q);
     }
 
-    public Session getInstance(Queue<T> q) {
+    public Session() {
+    }
+
+    public Session getInstance(Queue<Trial> q) {
         return new Session(q);
     }
 
@@ -29,7 +30,7 @@ public class Session<T extends Trial> {
         return trials.size();
     }
 
-    protected int getTypeRate(T trial, RateType type) {
+    protected int getTypeRate(Trial trial, RateType type) {
         switch (type) {
             case performance:
                 return trial.isGoodChoice() ? 100 : 0;
@@ -41,7 +42,7 @@ public class Session<T extends Trial> {
         return 0;
     }
 
-    protected int getTypeBaseRate(T trial, RateType type) {
+    protected int getTypeBaseRate(Trial trial, RateType type) {
         switch (type) {
             case performance:
                 return 1;
@@ -58,7 +59,7 @@ public class Session<T extends Trial> {
         int countLaserOn = 0;
         int correctLaserOff = 0;
         int countLaserOff = 0;
-        for (T trial : trials) {
+        for (Trial trial : trials) {
             if (trial.withLaserON()) {
                 countLaserOn += getTypeBaseRate(trial, type);
                 correctLaserOn += getTypeRate(trial, type);
@@ -90,7 +91,7 @@ public class Session<T extends Trial> {
 
     public int getLickCount() {
         int lickCount = 0;
-        for (T trail : trials) {
+        for (Trial trail : trials) {
             switch (trail.getResponse()) {
                 case Hit:
                     lickCount++;
@@ -114,24 +115,8 @@ public class Session<T extends Trial> {
         performance, falseAlarm, miss;
     }
 
-    public Queue<T> getTrails() {
+    public Queue<Trial> getTrails() {
         return trials;
-    }
-
-    public int[] getHitNFalse() {
-        int hit = 0;
-        int fa = 0;
-        for (Trial t : trials) {
-            switch (t.response) {
-                case Hit:
-                    hit++;
-                    break;
-                case FalseAlarm:
-                    fa++;
-                    break;
-            }
-        }
-        return new int[]{hit, fa};
     }
 
 }

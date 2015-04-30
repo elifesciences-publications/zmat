@@ -7,23 +7,25 @@ package zmat.sessionparser.cycleparser;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Trial;
 
 /**
  *
  * @author Xiaoxing
  */
-public class CyDay extends zmat.sessionparser.Day<CySession> {
+public class CyDay extends zmat.dnms_session.Day {
 
-    protected CyDay(String fileName, Queue<CySession> q) {
+    protected CyDay(String fileName, Queue<Session> q) {
         super(fileName, q);
         combineSessions();
     }
 
     private void combineSessions() {
         removeBadSessions(12, true, 3);
-        LinkedList<CyTrial> q = new LinkedList<>();
-        for (CySession s : sessions) {
-            for (CyTrial t : s.getTrails()) {
+        LinkedList<Trial> q = new LinkedList<>();
+        for (Session s : sessions) {
+            for (Trial t : s.getTrails()) {
                 q.add(t);
             }
         }

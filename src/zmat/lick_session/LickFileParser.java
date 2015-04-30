@@ -2,16 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser;
+package zmat.lick_session;
 
+import zmat.dnms_session.Trial;
+import zmat.dnms_session.EventType;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Day;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -19,15 +20,9 @@ import java.util.Queue;
  *
  * @author Libra
  */
-public class FileParser {
+public class LickFileParser extends zmat.dnms_session.FileParser {
 
-    protected Queue<Day> days;
-    final private Session sessionFactory;
-    
-    public FileParser(Session s){
-        this.sessionFactory=s;
-    }
-    
+    @Override
     public void parseFiles(String... s) {
         days = new LinkedList<>();
         for (String path : s) {
@@ -35,7 +30,11 @@ public class FileParser {
         }
     }
 
-    protected Queue<? extends Session> processFile(File f) {
+    @Override
+    protected Queue<Session> processFile(File f) {
+        int trialStartTime = 0;
+        int delayLength = 0;
+        ArrayList<Integer[]> licks = new ArrayList<>();
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
@@ -50,15 +49,14 @@ public class FileParser {
 
             for (int[] evt : eventList) {
                 switch (evt[2]) {
+                    case 0:
+                        licks.add(new Integer[]{evt[0] - trialStartTime, evt[3]});
+                        break;
                     case 61:
                         switch (evt[3]) {
-//                            case 1:
-//                                currentTrials = new LinkedList<>();
-//                                break;
                             case 0:
                                 if (currentTrials.size() > 0) {
-//                                    System.out.println(evt[0]);
-                                    sessions.offer(sessionFactory.getInstance(currentTrials));
+                                    sessions.offer(new Session(currentTrials));
                                     currentTrials = new LinkedList<>();
                                 }
                                 break;
@@ -70,10 +68,11 @@ public class FileParser {
                     case 7:
                         response = responses[evt[2] - 4];
                         if (firstOdor != null && secondOdor != null) {
-                            currentTrials.offer(new Trial(firstOdor, secondOdor, response, laserOn));
+                            currentTrials.offer(new LickTrial(firstOdor, secondOdor, response, laserOn, licks, delayLength));
                         }
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
+                        licks = new ArrayList<>();
                         laserOn = false;
                         break;
                     case 9:
@@ -81,8 +80,11 @@ public class FileParser {
                         if (evt[3] == 1) {
                             if (firstOdor == EventType.unknown) {
                                 firstOdor = odors[evt[2] - 9];
+                                trialStartTime = evt[0];
+                                licks = new ArrayList<>();
                             } else {
                                 secondOdor = odors[evt[2] - 9];
+                                delayLength = evt[0] - trialStartTime - 1000;
                             }
                         }
                         break;
@@ -92,7 +94,7 @@ public class FileParser {
                 }
             }
             if (currentTrials.size() > 0) {
-                sessions.offer(sessionFactory.getInstance(currentTrials));
+                sessions.offer(new Session(currentTrials));
             }
 //            System.out.println(Integer.toString(sessions.size())+" sessions");
             return sessions;
@@ -102,38 +104,4 @@ public class FileParser {
         return null;
     }
 
-    public Queue<? extends Day> getDays() {
-        return days;
-    }
-
-    public int[][] getRawMat(String s) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(s)))) {
-            @SuppressWarnings("unchecked")
-            ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
-            return eventList.toArray(new int[eventList.size()][]);
-        } catch (ClassNotFoundException | IOException ex) {
-            System.out.println(ex.toString());
-        }
-        return new int[0][0];
-    }
-
-    public void mat2ser(int[][] mat, String pathToFile) {
-        ArrayList<int[]> l = new ArrayList<>();
-        l.addAll(Arrays.asList(mat));
-        arrayList2ser(l, pathToFile);
-    }
-
-    public void arrayList2ser(ArrayList<int[]> l, String pathToFile) {
-
-        File targetFile = new File(pathToFile);
-        File parent = targetFile.getParentFile();
-        if (!parent.exists() && !parent.mkdirs()) {
-            throw new IllegalStateException("Couldn't create dir: " + parent);
-        }
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(targetFile))) {
-            out.writeObject(l);
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-    }
 }

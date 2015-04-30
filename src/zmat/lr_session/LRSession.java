@@ -3,32 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser;
+package zmat.lr_session;
 
 import java.util.Queue;
+import zmat.dnms_session.EventType;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Trial;
 
 /**
- *
  * @author Xiaoxing
- * @param <T>
  */
-public class LRSession<T extends Trial> extends Session<T> {
+public class LRSession extends Session {
 
-    
-    public LRSession(Queue<T> q) {
+    public LRSession(Queue<Trial> q) {
         super(q);
     }
-    
-    public LRSession getInstance(Queue<T> q){
-        return new LRSession(q);
-    }
+
     @Override
-    protected int getTypeBaseRate(T trial, RateType type) {
+    protected int getTypeBaseRate(Trial trial, RateType type) {
         switch (type) {
             case performance:
-                return 1;
+                return (trial.getResponse() == EventType.FalseAlarm || trial.getResponse() == EventType.Hit) ? 1 : 0;
             case falseAlarm:
-                return (trial.response == EventType.FalseAlarm || trial.response == EventType.Hit) ? 1 : 0;
+                return 1;
             case miss:
                 return 1;
         }

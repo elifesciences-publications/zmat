@@ -6,29 +6,30 @@
 package zmat.sessionparser.cycleparser;
 
 import java.util.Queue;
-import zmat.sessionparser.Session;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Trial;
 
 /**
  *
  * @author Xiaoxing
  */
-public class CySession extends zmat.sessionparser.Session<CyTrial> {
+public class CySession extends zmat.dnms_session.Session {
 
-    protected CySession(Queue<CyTrial> q) {
+    public CySession(Queue<Trial> q) {
         super(q);
     }
 
     @Override
-    public Session getInstance(Queue<CyTrial> q) {
+    public Session getInstance(Queue<Trial> q) {
         return new CySession(q); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     protected int[] getRate(Session.RateType type) {
         int[] match = new int[13];
         int[] sum = new int[13];
-        for (CyTrial trial : trials) {
-            int typeIndex = trial.getTypeIndex();
+        for (Trial trial : trials) {
+            int typeIndex = ((CyTrial) trial).getTypeIndex();
             sum[typeIndex]++;
             match[typeIndex] += getTypeRate(trial, type);
         }

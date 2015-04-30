@@ -11,14 +11,15 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import zmat.sessionparser.EventType;
-import zmat.sessionparser.Session;
+import zmat.dnms_session.EventType;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Trial;
 
 /**
  *
  * @author Libra
  */
-public class CyFileParser extends zmat.sessionparser.FileParser {
+public class CyFileParser extends zmat.dnms_session.FileParser {
 
     @Override
     public void parseFiles(String... s) {
@@ -28,21 +29,15 @@ public class CyFileParser extends zmat.sessionparser.FileParser {
         }
     }
 
-    public CyFileParser(CySession s) {
-        super(s);
-    }
-    
-    
-
     @Override
-    protected Queue<CySession> processFile(File f) {
+    protected Queue<Session> processFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
             @SuppressWarnings("unchecked")
             ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
-            Queue<CyTrial> currentTrials = new LinkedList<>();
-            Queue<CySession> sessions = new LinkedList<>();
+            Queue<Trial> currentTrials = new LinkedList<>();
+            Queue<Session> sessions = new LinkedList<>();
             EventType firstOdor = EventType.unknown;
             EventType secondOdor = EventType.unknown;
             boolean laserOn = false;

@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser.lickParser;
+package zmat.lick_session;
 
 import java.util.ArrayList;
-import zmat.sessionparser.EventType;
+import zmat.dnms_session.EventType;
 
 /**
  *
  * @author Xiaoxing
  */
-public class LickTrial extends zmat.sessionparser.Trial {
+public class LickTrial extends zmat.dnms_session.Trial {
 
     ArrayList<Integer[]> licks;
     int delayLength;
@@ -27,14 +27,19 @@ public class LickTrial extends zmat.sessionparser.Trial {
         return licks.toArray(new Integer[licks.size()][]);
     }
 
-    public float getDelayLickFreq() {
+    public int[] getDelayLick() {
         int count = 0;
         for (Integer[] l : licks) {
-            if (l[0] > 1000 && l[0] < delayLength + 1000) {
+            if (l[0] > 1000) {
                 count++;
+            } else if (l[0] > delayLength + 1000) {
+                break;
             }
         }
-        return (float) count * 1000 / delayLength;
+        return new int[]{count, laserON ? 1 : 0};
     }
 
+//    public float getDelayLickFreq() {
+//        return (float) getDelayLick()[0] * 1000 / delayLength;
+//    }
 }
