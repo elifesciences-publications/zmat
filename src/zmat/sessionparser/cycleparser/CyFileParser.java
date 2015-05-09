@@ -22,11 +22,12 @@ import zmat.dnms_session.Trial;
 public class CyFileParser extends zmat.dnms_session.FileParser {
 
     @Override
-    public void parseFiles(String... s) {
+    public zmat.dnms_session.FileParser parseFiles(String... s) {
         days = new LinkedList<>();
         for (String path : s) {
             days.add(new CyDay(path, processFile(new File(path))));
         }
+        return this;
     }
 
     @Override

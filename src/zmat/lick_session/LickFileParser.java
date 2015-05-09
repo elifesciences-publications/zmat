@@ -7,7 +7,6 @@ package zmat.lick_session;
 import zmat.dnms_session.Trial;
 import zmat.dnms_session.EventType;
 import zmat.dnms_session.Session;
-import zmat.dnms_session.Day;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,13 +21,6 @@ import java.util.Queue;
  */
 public class LickFileParser extends zmat.dnms_session.FileParser {
 
-    @Override
-    public void parseFiles(String... s) {
-        days = new LinkedList<>();
-        for (String path : s) {
-            days.add(new Day(path, processFile(new File(path))));
-        }
-    }
 
     @Override
     protected Queue<Session> processFile(File f) {

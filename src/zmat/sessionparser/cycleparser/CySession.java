@@ -24,20 +24,5 @@ public class CySession extends zmat.dnms_session.Session {
         return new CySession(q); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    protected int[] getRate(Session.RateType type) {
-        int[] match = new int[13];
-        int[] sum = new int[13];
-        for (Trial trial : trials) {
-            int typeIndex = ((CyTrial) trial).getTypeIndex();
-            sum[typeIndex]++;
-            match[typeIndex] += getTypeRate(trial, type);
-        }
-        System.out.println(Integer.toString(sum[0]) + " trials");
-        int[] ratio = new int[12];
-        for (int i = 0; i < 12; i++) {
-            ratio[i] = match[i] / sum[i];
-        }
-        return ratio;
-    }
+
 }

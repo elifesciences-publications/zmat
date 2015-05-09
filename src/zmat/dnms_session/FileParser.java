@@ -23,11 +23,13 @@ public class FileParser {
 
     protected Queue<Day> days;
     
-    public void parseFiles(String... s) {
+    public FileParser parseFiles(String... s) {
         days = new LinkedList<>();
         for (String path : s) {
+//            System.out.println("add day");
             days.add(new Day(path, processFile(new File(path))));
         }
+        return this;
     }
 
     protected Queue<Session> processFile(File f) {
@@ -98,6 +100,7 @@ public class FileParser {
     }
 
     public Queue<Day> getDays() {
+//        System.out.println(days.size()+" days");
         return days;
     }
 

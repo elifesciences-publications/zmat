@@ -10,7 +10,7 @@ package zmat.dnms_session;
  */
 public enum EventType {
 //      LICK,WATER,
-      OdorA,OdorB,Miss,Hit,CorrectRejection,FalseAlarm,
+      Lick,OdorA,OdorB,Miss,Hit,CorrectRejection,FalseAlarm,
       NewSession,Others,dnmsLaser,dnmsEarlyLaser,
       dnmsLateLaser,unknown;
 }

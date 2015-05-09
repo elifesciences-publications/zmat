@@ -36,10 +36,15 @@ public class LickTrial extends zmat.dnms_session.Trial {
                 break;
             }
         }
-        return new int[]{count, laserON ? 1 : 0};
+        return new int[]{count, firstOdor == EventType.OdorA ? 1 : 0, laserON ? 1 : 0};
     }
 
-//    public float getDelayLickFreq() {
-//        return (float) getDelayLick()[0] * 1000 / delayLength;
-//    }
+    public ArrayList<Integer[]> getLickQueue() {
+        return licks;
+    }
+
+    public int getDelayLength() {
+        return delayLength;
+    }
+        
 }

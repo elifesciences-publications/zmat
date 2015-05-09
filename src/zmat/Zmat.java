@@ -22,9 +22,10 @@ import zmat.sessionparser.cycleparser.CyFileParser;
  */
 public class Zmat {
 
-    private int minLick = 16;
+    private int minLick = 0;
     private DataProcessor dp;
     private Queue<Day> days;
+    private ArrayList<String> rootFiles;
 
     /**
      * @param args the command line arguments
@@ -33,7 +34,7 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 1.11");
+        System.out.println("zmat ver 1.61");
     }
 
     public void setMinLick(int minLick) {
@@ -48,35 +49,24 @@ public class Zmat {
         (new zmat.dnms_session.FileParser()).mat2ser(mat, pathToFile);
     }
 
-//    public Integer[][][] getLicks(boolean... laserOn) {
-//        if (laserOn.length > 1) {
-//            System.out.println("Wrong parameter (boolean laser on)");
-//            return null;
-//        }
-//        ArrayList<Integer[][]> alldays = new ArrayList<>();
-//        if (days != null) {
-//            for (Day d : days) {
-//                for (Session s : d.getSessions()) {
-//                    for(Trial t:s.getTrails()){
-//                        ((zmat.lick_session.LickTrial) t).getLicks();
-//                    }    
-//                    
-//                }
-////TODO                alldays.addAll(((zmat.sessionparser.lickParser.LickDay) d).getLicks());
-//            }
-//            return alldays.toArray(new Integer[days.size()][][]);
-//        }
-//        return null;
-//    }
-    public int[][] getLick() {
+    public int[][] getLick(int trialNum) {
         ArrayList<int[]> allTrials = new ArrayList<>();
+
         if (days == null) {
             return null;
         }
+
         for (Day d : days) {
+            int trialCount = 0;
+            day:
             for (Session s : d.getSessions()) {
+
                 for (Trial t : s.getTrails()) {
+                    if (trialNum > 0 && trialCount >= trialNum) {
+                        break day;
+                    }
                     allTrials.add(((zmat.lick_session.LickTrial) t).getDelayLick());
+                    trialCount++;
                 }
             }
         }
@@ -85,25 +75,6 @@ public class Zmat {
 
     public void processFile(String... s) {
         dp = new DataProcessor();
-        dp.setMinLick(this.minLick);
-        dp.processFile(s);
-    }
-
-    public void processLRFile(String... s) {
-        dp = new DataProcessor() {
-            @Override
-            public void processFile(String... s) {
-                FileParser fp = new zmat.lr_session.LRFileParser();
-                fp.parseFiles(s);
-                days = fp.getDays();
-                if (days.size() < 1) {
-                    System.out.println("No suitable records found.");
-                }
-                for (Day d : days) {
-                    d.removeBadSessions(20, true, minLick);
-                }
-            }
-        };
         dp.setMinLick(this.minLick);
         dp.processFile(s);
     }
@@ -125,44 +96,65 @@ public class Zmat {
     }
 
     public void processLickFile(String... s) {
-        dp = new DataProcessor() {
-
-            @Override
-            public void processFile(String... s) {
-                FileParser fp = new zmat.lick_session.LickFileParser();
-                fp.parseFiles(s);
-                days = fp.getDays();
-                if (days.size() < 1) {
-                    System.out.println("No suitable records found.");
+        days = new LinkedList<>();
+        for (String f : s) {
+            dp = new DataProcessor() {
+                @Override
+                public void processFile(String... s) {
+                    FileParser fp = s[0].endsWith(".ser")
+                            ? new zmat.lick_session.LickFileParser()
+                            : new zmat.txtFile.TxtFileParser();
+                    fp.parseFiles(s);
+                    days = fp.getDays();
+                    if (days.size() < 1) {
+                        System.out.println("No suitable records found.");
+                    }
+                    for (Day d : days) {
+                        d.removeBadSessions(20, true, minLick);
+                    }
                 }
-                for (Day d : days) {
-                    d.removeBadSessions(20, true, minLick);
+            };
+            dp.setMinLick(this.minLick);
+            dp.processFile(new String[]{f});
+            days.addAll(dp.getDays());
+        }
+    }
+
+    public int[] getHitFalseMiss(boolean lightOn, int trialLimit) {
+        return dp.getHitFalseMiss(lightOn, trialLimit);
+    }
+
+    public int[][] getHitFalseMissSession(boolean lightOn, int trialLimit) {
+        return dp.getHitFalseMissSession(lightOn, trialLimit);
+    }
+
+    public ArrayList<String> updateFilesList(String[] rootPath) {
+        if (rootPath == null || rootPath.length == 0) {
+            return null;
+        }
+        ArrayList<String> fileList = new ArrayList<>();
+        for (String onePath : rootPath) {
+            File root = new File(onePath);
+            if (!root.exists()) {
+                continue;
+            }
+            File[] list = root.listFiles();
+
+            if (list != null) {
+                for (File f : list) {
+                    if (f.isDirectory()) {
+                        fileList.addAll(updateFilesList(new String[]{f.getAbsolutePath()}));
+                    } else if (f.getName().endsWith(".ser") || f.getName().endsWith("Process.txt")) {
+                        fileList.add(f.getPath());
+                    }
                 }
             }
 
-        };
-        dp.setMinLick(this.minLick);
-
-        dp.processFile(s);
-        days = new LinkedList<>();
-        days.addAll(dp.getDays());
+            this.rootFiles = fileList;
+        }
+        return fileList;
     }
 
-    public int[] getHitFalseMiss(boolean lightOn) {
-        return dp.getHitFalseMiss(lightOn);
-    }
-
-//    public int[][] cr() {
-//        return dp.processList(DataProcessor.listType.CORRECT_RATE);
-//    }
-//
-//    public int[][] fa() {
-//        return dp.processList(DataProcessor.listType.FALSE_ALARM);
-//    }
-//
-//    public int[][] miss() {
-//        return dp.processList(DataProcessor.listType.MISS);
-//    }
     private ArrayList<String> listFilesList(String rootPath, String[] elements) {
         ArrayList<String> fileList = new ArrayList<>();
         if (rootPath == null) {
@@ -180,7 +172,7 @@ public class Zmat {
                     fileList.addAll(listFilesList(f.getAbsolutePath(), elements));
                 } else {
                     String fileName = f.getName();
-                    boolean add = fileName.endsWith(".ser");
+                    boolean add = fileName.endsWith(".ser") || fileName.endsWith("Process.txt");
 
                     if (elements.length > 0) {
                         for (String element : elements) {
@@ -198,16 +190,32 @@ public class Zmat {
                 }
             }
         }
-
         return fileList;
     }
 
-    public String[] listFiles(String rootPath, String... elements) {
+    public String[] listFiles(String rootPath, String[] elements) {
         if (rootPath.length() < 1) {
             rootPath = "I:\\Behavior\\2014\\";
         }
         ArrayList<String> fileList = listFilesList(rootPath, elements);
         return fileList.toArray(new String[fileList.size()]);
+    }
+
+    public String[] listFiles(String[] elements) {
+        Queue<String> files = new LinkedList<>();
+        file:
+        for (String s : this.rootFiles) {
+            for (String e : elements) {
+                if ((!e.startsWith("-")) && !s.contains(e)) {
+                    continue file;
+                }
+                if (e.startsWith("-") && s.contains(e.substring(1))) {
+                    continue file;
+                }
+            }
+            files.add(s);
+        }
+        return files.toArray(new String[files.size()]);
     }
 
 }

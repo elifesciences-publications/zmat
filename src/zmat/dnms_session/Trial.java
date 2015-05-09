@@ -10,10 +10,10 @@ package zmat.dnms_session;
  */
 public class Trial {
 
-    protected EventType firstOdor;
-    protected EventType secondOdor;
-    protected EventType response;
-    protected boolean laserON;
+    final protected EventType firstOdor;
+    final protected EventType secondOdor;
+    final protected EventType response;
+    final protected boolean laserON;
 
     public Trial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON) {
         this.firstOdor = firstOdor;
