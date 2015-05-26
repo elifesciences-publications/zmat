@@ -79,7 +79,7 @@ public class Zmat {
         dp.processFile(s);
     }
 
-    public void processCyFile(String... s) {
+    private void processCyFile(String... s) {
         dp = new DataProcessor() {
             @Override
             public void processFile(String... s) {
@@ -120,12 +120,9 @@ public class Zmat {
         }
     }
 
-    public int[] getHitFalseMiss(boolean lightOn, int trialLimit) {
-        return dp.getHitFalseMiss(lightOn, trialLimit);
-    }
 
-    public int[][] getHitFalseMissSession(boolean lightOn, int trialLimit) {
-        return dp.getHitFalseMissSession(lightOn, trialLimit);
+    public int[][] getPerf(boolean lightOn, int trialLimit) {
+        return dp.getPerf(lightOn, trialLimit);
     }
 
     public ArrayList<String> updateFilesList(String[] rootPath) {

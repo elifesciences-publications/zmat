@@ -22,7 +22,7 @@ import java.util.Queue;
 public class FileParser {
 
     protected Queue<Day> days;
-    
+
     public FileParser parseFiles(String... s) {
         days = new LinkedList<>();
         for (String path : s) {
@@ -48,19 +48,17 @@ public class FileParser {
             for (int[] evt : eventList) {
                 switch (evt[2]) {
                     case 61:
-                        switch (evt[3]) {
+//                        switch (evt[3]) {
 //                            case 1:
-//                                currentTrials = new LinkedList<>();
-//                                break;
-                            case 0:
+//                            case 0:
                                 if (currentTrials.size() > 0) {
 //                                    System.out.println(evt[0]);
                                     sessions.offer(new Session(currentTrials));
                                     currentTrials = new LinkedList<>();
                                 }
                                 break;
-                        }
-                        break;
+//                        }
+//                        break;
                     case 4:
                     case 5:
                     case 6:

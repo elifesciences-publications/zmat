@@ -44,50 +44,8 @@ public class DataProcessor {
 
     }
 
-    public int[] getHitFalseMiss(boolean lightOn, int trialLimit) {
-        int hit = 0;
-        int fa = 0;
-        int miss = 0;
-        int totalTrial = 0;
-
-        for (Day d : days) {
-            if (d.sessions.size() < 5) {
-                continue;
-            }
-            int trialCount = 0;
-            day:
-            for (Session s : d.sessions) {
-
-                for (Trial t : s.trials) {
-                    if (trialLimit > 0 && trialCount >= trialLimit) {
-                        break day;
-                    }
-                    if (t.withLaserON() == lightOn) {
-                        totalTrial++;
-                        trialCount++;
-
-                        switch (t.response) {
-                            case Hit:
-                                hit++;
-                                break;
-                            case FalseAlarm:
-                                fa++;
-                                break;
-                            case Miss:
-                                miss++;
-                                break;
-                        }
-                    }
-                }
-
-            }
-        }
-//        System.out.println(totalTrial);
-        return new int[]{hit, fa, miss, totalTrial};
-    }
-
-    public int[][] getHitFalseMissSession(boolean lightOn, int trialLimit) {
-        ArrayList<int[]> sessions=new ArrayList<>();
+    public int[][] getPerf(boolean lightOn, int trialLimit) {
+        ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
             if (d.sessions.size() < 5) {
                 continue;
@@ -99,9 +57,13 @@ public class DataProcessor {
                 int fa = 0;
                 int miss = 0;
                 int totalTrial = 0;
+                int correctRejection = 0;
 
                 for (Trial t : s.trials) {
                     if (trialLimit > 0 && trialCount >= trialLimit) {
+                        if (totalTrial > 0) {
+                            sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                        }
                         break day;
                     }
                     if (t.withLaserON() == lightOn) {
@@ -118,10 +80,13 @@ public class DataProcessor {
                             case Miss:
                                 miss++;
                                 break;
+                            case CorrectRejection:
+                                correctRejection++;
+                                break;
                         }
                     }
                 }
-                sessions.add(new int[]{hit, fa, miss, totalTrial});
+                sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
             }
         }
 //        System.out.println(totalTrial);

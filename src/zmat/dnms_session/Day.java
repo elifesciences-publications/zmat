@@ -33,7 +33,7 @@ public class Day {
             }
         }
         sessions = q;
-//        System.out.println(Integer.toString(sessions.size()) + " sessions.");
+        System.out.println(Integer.toString(sessions.size()) + " sessions.");
 
     }
 
