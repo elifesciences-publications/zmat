@@ -44,10 +44,10 @@ public class DataProcessor {
 
     }
 
-    public int[][] getPerf(boolean lightOn, int trialLimit) {
+    public int[][] getPerf(int lightOn, int trialLimit) {
         ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
-            if (d.sessions.size() < 5) {
+            if (d.sessions.size() < 2) {
                 continue;
             }
             int trialCount = 0;
@@ -66,7 +66,13 @@ public class DataProcessor {
                         }
                         break day;
                     }
-                    if (t.withLaserON() == lightOn) {
+                    //Laser quarter and other cycles
+                    if ((s instanceof zmat.sessionparser.quarterparser.Session
+                            && ((zmat.sessionparser.quarterparser.Trial) t).getLaserType() == lightOn)
+                            //Laser On and Off
+                            || (!(s instanceof zmat.sessionparser.quarterparser.Session)
+                            && (lightOn == 2 || t.withLaserON() == (lightOn == 1)))) {
+
                         totalTrial++;
                         trialCount++;
 
@@ -86,7 +92,9 @@ public class DataProcessor {
                         }
                     }
                 }
-                sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                if (totalTrial > 0) {
+                    sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                }
             }
         }
 //        System.out.println(totalTrial);

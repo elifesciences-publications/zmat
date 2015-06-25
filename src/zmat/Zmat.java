@@ -14,7 +14,6 @@ import zmat.dnms_session.Day;
 import zmat.dnms_session.FileParser;
 import zmat.dnms_session.Session;
 import zmat.dnms_session.Trial;
-import zmat.sessionparser.cycleparser.CyFileParser;
 
 /**
  *
@@ -79,11 +78,11 @@ public class Zmat {
         dp.processFile(s);
     }
 
-    private void processCyFile(String... s) {
+    public void processQtrFile(String... s) {
         dp = new DataProcessor() {
             @Override
             public void processFile(String... s) {
-                FileParser fp = new CyFileParser();
+                FileParser fp = new zmat.sessionparser.quarterparser.FileParser();
                 fp.parseFiles(s);
                 days = fp.getDays();
                 if (days.size() < 1) {
@@ -121,7 +120,7 @@ public class Zmat {
     }
 
 
-    public int[][] getPerf(boolean lightOn, int trialLimit) {
+    public int[][] getPerf(int lightOn, int trialLimit) {
         return dp.getPerf(lightOn, trialLimit);
     }
 

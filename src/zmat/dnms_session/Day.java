@@ -41,31 +41,6 @@ public class Day {
         return sessions.size();
     }
 
-//    public List<int[]> getCorrectRates() {
-//        List<int[]> correctRates = new ArrayList<>();
-////        System.out.println(sessions.length+"Sessions ");
-//        for (Session session : sessions) {
-//            correctRates.add(session.getCorrectRate());
-//        }
-//        return correctRates;
-//    }
-//
-//    public List<int[]> getFalseAlarmRates() {
-//        List<int[]> falseAlarms = new ArrayList<>();
-//        for (Session session : sessions) {
-//            falseAlarms.add(session.getFalseAlarmRate());
-//        }
-//        return falseAlarms;
-//    }
-//
-//    public List<int[]> getMissRates() {
-//        List<int[]> falseAlarms = new ArrayList<>();
-//        for (Session session : sessions) {
-//            falseAlarms.add(session.getMissRate());
-//        }
-//        return falseAlarms;
-//    }
-
     public String getFileName() {
         return fileName;
     }
