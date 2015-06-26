@@ -95,7 +95,7 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
                 case CorrectRejection:
                 case FalseAlarm:
                     response = e.getEventType();
-                    if (firstOdor != null && secondOdor != null) {
+                    if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
                         currentTrials.offer(new LickTrial(firstOdor, secondOdor, response, false, licks, delayLength));
                     }
                     firstOdor = EventType.unknown;

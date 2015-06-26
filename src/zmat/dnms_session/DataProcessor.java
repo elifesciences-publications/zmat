@@ -67,11 +67,64 @@ public class DataProcessor {
                         break day;
                     }
                     //Laser quarter and other cycles
-                    if ((s instanceof zmat.sessionparser.quarterparser.Session
+                    if ((t instanceof zmat.sessionparser.quarterparser.Trial
                             && ((zmat.sessionparser.quarterparser.Trial) t).getLaserType() == lightOn)
                             //Laser On and Off
-                            || (!(s instanceof zmat.sessionparser.quarterparser.Session)
+                            || (!(t instanceof zmat.sessionparser.quarterparser.Trial)
                             && (lightOn == 2 || t.withLaserON() == (lightOn == 1)))) {
+
+                        totalTrial++;
+                        trialCount++;
+
+                        switch (t.response) {
+                            case Hit:
+                                hit++;
+                                break;
+                            case FalseAlarm:
+                                fa++;
+                                break;
+                            case Miss:
+                                miss++;
+                                break;
+                            case CorrectRejection:
+                                correctRejection++;
+                                break;
+                        }
+                    }
+                }
+                if (totalTrial > 0) {
+                    sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                }
+            }
+        }
+//        System.out.println(totalTrial);
+        return sessions.toArray(new int[sessions.size()][]);
+    }
+
+    public int[][] getCatchPerf(int catchTrial, int trialLimit) {
+        ArrayList<int[]> sessions = new ArrayList<>();
+        for (Day d : days) {
+            if (d.sessions.size() < 2) {
+                continue;
+            }
+            int trialCount = 0;
+            day:
+            for (Session s : d.sessions) {
+                int hit = 0;
+                int fa = 0;
+                int miss = 0;
+                int totalTrial = 0;
+                int correctRejection = 0;
+
+                for (Trial t : s.trials) {
+                    if (trialLimit > 0 && trialCount >= trialLimit) {
+                        if (totalTrial > 0) {
+                            sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                        }
+                        break day;
+                    }
+                    //Laser quarter and other cycles
+                    if (((zmat.sessionparser.noodor_parser.Trial) t).isCatch() == (catchTrial == 1)) {
 
                         totalTrial++;
                         trialCount++;

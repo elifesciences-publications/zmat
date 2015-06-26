@@ -94,6 +94,22 @@ public class Zmat {
         dp.processFile(s);
     }
 
+    public void processCatchFile(String... s) {
+        dp = new DataProcessor() {
+            @Override
+            public void processFile(String... s) {
+                FileParser fp = new zmat.sessionparser.noodor_parser.FileParser();
+                fp.parseFiles(s);
+                days = fp.getDays();
+                if (days.size() < 1) {
+                    System.out.println("No suitable records found.");
+                }
+            }
+        };
+        dp.setMinLick(this.minLick);
+        dp.processFile(s);
+    }
+
     public void processLickFile(String... s) {
         days = new LinkedList<>();
         for (String f : s) {
@@ -119,9 +135,12 @@ public class Zmat {
         }
     }
 
-
     public int[][] getPerf(int lightOn, int trialLimit) {
         return dp.getPerf(lightOn, trialLimit);
+    }
+
+    public int[][] getCatchPerf(int isCatch, int trialLimit) {
+        return dp.getCatchPerf(isCatch, trialLimit);
     }
 
     public ArrayList<String> updateFilesList(String[] rootPath) {

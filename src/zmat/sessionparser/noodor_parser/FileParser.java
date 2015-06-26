@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser.cycleparser;
+package zmat.sessionparser.noodor_parser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,51 +13,37 @@ import java.util.LinkedList;
 import java.util.Queue;
 import zmat.dnms_session.EventType;
 import zmat.dnms_session.Session;
-import zmat.dnms_session.Trial;
 
 /**
  *
  * @author Libra
  */
-public class CyFileParser extends zmat.dnms_session.FileParser {
-
-    @Override
-    public zmat.dnms_session.FileParser parseFiles(String... s) {
-        days = new LinkedList<>();
-        for (String path : s) {
-            days.add(new CyDay(path, processFile(new File(path))));
-        }
-        return this;
-    }
+public class FileParser extends zmat.dnms_session.FileParser {
 
     @Override
     protected Queue<Session> processFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-            @SuppressWarnings("unchecked")
             ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
-            Queue<Trial> currentTrials = new LinkedList<>();
+            Queue<zmat.dnms_session.Trial> currentTrials = new LinkedList<>();
             Queue<Session> sessions = new LinkedList<>();
+            boolean isCatch = false;
             EventType firstOdor = EventType.unknown;
             EventType secondOdor = EventType.unknown;
             boolean laserOn = false;
             EventType response;
-            int laserType = 0;
-            int delayLength = 0;
-            int firstOdorTime = 0;
 
             for (int[] evt : eventList) {
                 switch (evt[2]) {
                     case 61:
                         switch (evt[3]) {
-//                            case 1:
-//                                currentTrials = new LinkedList<>();
-//                                break;
+                            case 1:
+                                currentTrials = new LinkedList<>();
+                                break;
                             case 0:
                                 if (currentTrials.size() > 0) {
-                                    sessions.offer(new CySession(currentTrials));
-                                    currentTrials = new LinkedList<>();
+                                    sessions.offer(new Session(currentTrials));
                                 }
                                 break;
                         }
@@ -66,39 +52,44 @@ public class CyFileParser extends zmat.dnms_session.FileParser {
                     case 5:
                     case 6:
                     case 7:
+//                        System.out.println("Response");
                         response = responses[evt[2] - 4];
                         if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
-                            currentTrials.offer(new CyTrial(firstOdor, secondOdor, response, laserOn, delayLength, laserType));
+                            currentTrials.offer(new Trial(isCatch, firstOdor, secondOdor, response, laserOn));
+//                            System.out.println("Session+");
                         }
+                        isCatch = false;
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
                         laserOn = false;
-                        delayLength = 0;
-                        laserType = 0;
                         break;
                     case 9:
                     case 10:
                         if (evt[3] != 0) {
                             if (firstOdor == EventType.unknown) {
                                 firstOdor = odors[evt[2] - 9];
-                                firstOdorTime = evt[0];
-                            } else if (evt[0] < firstOdorTime + 12500) {
-                                delayLength = evt[0] - firstOdorTime;
+                            } else {
                                 secondOdor = odors[evt[2] - 9];
                             }
+                        }
+                        if (evt[3] == 2 || evt[3] == 3) {
+                            isCatch = true;
                         }
                         break;
                     case 65:
                         laserOn = (evt[3] == 1);
                         break;
-                    case 58:
-                        laserType = evt[3];
+                    case 79:
+                        if ((firstOdor == EventType.OdorA && evt[3] == 2)
+                                || (firstOdor == EventType.OdorB && evt[3] == 1)) {
+                            isCatch = true;
+                        }
                         break;
-
                 }
             }
             if (currentTrials.size() > 0) {
-                sessions.offer(new CySession(currentTrials));
+                sessions.offer(new Session(currentTrials));
+//                System.out.println("Session+");
             }
             return sessions;
         } catch (IOException | ClassNotFoundException e) {

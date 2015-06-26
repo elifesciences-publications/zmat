@@ -51,12 +51,12 @@ public class FileParser {
 //                        switch (evt[3]) {
 //                            case 1:
 //                            case 0:
-                                if (currentTrials.size() > 0) {
+                        if (currentTrials.size() > 0) {
 //                                    System.out.println(evt[0]);
-                                    sessions.offer(new Session(currentTrials));
-                                    currentTrials = new LinkedList<>();
-                                }
-                                break;
+                            sessions.offer(new Session(currentTrials));
+                            currentTrials = new LinkedList<>();
+                        }
+                        break;
 //                        }
 //                        break;
                     case 4:
@@ -64,7 +64,7 @@ public class FileParser {
                     case 6:
                     case 7:
                         response = responses[evt[2] - 4];
-                        if (firstOdor != null && secondOdor != null) {
+                        if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
                             currentTrials.offer(new Trial(firstOdor, secondOdor, response, laserOn));
                         }
                         firstOdor = EventType.unknown;
@@ -73,7 +73,7 @@ public class FileParser {
                         break;
                     case 9:
                     case 10:
-                        if (evt[3] == 1) {
+                        if (evt[3] != 0) {
                             if (firstOdor == EventType.unknown) {
                                 firstOdor = odors[evt[2] - 9];
                             } else {

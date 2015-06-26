@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import zmat.dnms_session.EventType;
+import zmat.dnms_session.Session;
 
 /**
  *
@@ -20,13 +21,13 @@ import zmat.dnms_session.EventType;
 public class FileParser extends zmat.dnms_session.FileParser {
 
     @Override
-    protected Queue<zmat.dnms_session.Session> processFile(File f) {
+    protected Queue<Session> processFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
             ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
             Queue<zmat.dnms_session.Trial> currentTrials = new LinkedList<>();
-            Queue<zmat.dnms_session.Session> sessions = new LinkedList<>();
+            Queue<Session> sessions = new LinkedList<>();
             int laserType = -1;
             EventType firstOdor = EventType.unknown;
             EventType secondOdor = EventType.unknown;
@@ -53,7 +54,7 @@ public class FileParser extends zmat.dnms_session.FileParser {
                     case 7:
 //                        System.out.println("Response");
                         response = responses[evt[2] - 4];
-                        if (laserType != -1 && firstOdor != null && secondOdor != null) {
+                        if (laserType != -1 && firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
                             currentTrials.offer(new Trial(laserType, firstOdor, secondOdor, response, laserOn));
 //                            System.out.println("Session+");
                         }
@@ -64,7 +65,7 @@ public class FileParser extends zmat.dnms_session.FileParser {
                         break;
                     case 9:
                     case 10:
-                        if (evt[3] == 1) {
+                        if (evt[3] != 0) {
                             if (firstOdor == EventType.unknown) {
                                 firstOdor = odors[evt[2] - 9];
                             } else {

@@ -21,7 +21,6 @@ import java.util.Queue;
  */
 public class LickFileParser extends zmat.dnms_session.FileParser {
 
-
     @Override
     protected Queue<Session> processFile(File f) {
         int trialStartTime = 0;
@@ -59,7 +58,7 @@ public class LickFileParser extends zmat.dnms_session.FileParser {
                     case 6:
                     case 7:
                         response = responses[evt[2] - 4];
-                        if (firstOdor != null && secondOdor != null) {
+                        if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
                             currentTrials.offer(new LickTrial(firstOdor, secondOdor, response, laserOn, licks, delayLength));
                         }
                         firstOdor = EventType.unknown;
@@ -69,7 +68,7 @@ public class LickFileParser extends zmat.dnms_session.FileParser {
                         break;
                     case 9:
                     case 10:
-                        if (evt[3] == 1) {
+                        if (evt[3] != 0) {
                             if (firstOdor == EventType.unknown) {
                                 firstOdor = odors[evt[2] - 9];
                                 trialStartTime = evt[0];
