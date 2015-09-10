@@ -1,38 +1,28 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.dnms_session;
+package zmat.sessionparser.gonogoparser;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import zmat.dnms_session.EventType;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Trial;
 
 /**
  *
  * @author Libra
  */
-public class FileParser {
-
-    protected Queue<Day> days;
-
-    public FileParser parseFiles(String... s) {
-        days = new LinkedList<>();
-        for (String path : s) {
-//            System.out.println("add day");
-            days.add(new Day(path, processFile(new File(path))));
-        }
-        return this;
-    }
-
-    protected Queue<Session> processFile(File f) {
+public class FileParser extends zmat.dnms_session.FileParser{
+     @Override
+     protected Queue<Session> processFile(File f) {
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
@@ -65,7 +55,7 @@ public class FileParser {
                     case 7:
 //                        System.out.println(firstOdor + ", " + secondOdor);
                         response = responses[evt[2] - 4];
-                        if (firstOdor != EventType.unknown &&  secondOdor != EventType.unknown) {
+                        if (firstOdor != EventType.unknown) {
                             currentTrials.offer(new Trial(firstOdor, secondOdor, response, laserOn));
                         }
                         firstOdor = EventType.unknown;
@@ -98,39 +88,4 @@ public class FileParser {
         return null;
     }
 
-    public Queue<Day> getDays() {
-//        System.out.println(days.size()+" days");
-        return days;
-    }
-
-    public int[][] getRawMat(String s) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(s)))) {
-            @SuppressWarnings("unchecked")
-            ArrayList<int[]> eventList = (ArrayList<int[]>) ois.readObject();
-            return eventList.toArray(new int[eventList.size()][]);
-        } catch (ClassNotFoundException | IOException ex) {
-            System.out.println(ex.toString());
-        }
-        return new int[0][0];
-    }
-
-    public void mat2ser(int[][] mat, String pathToFile) {
-        ArrayList<int[]> l = new ArrayList<>();
-        l.addAll(Arrays.asList(mat));
-        arrayList2ser(l, pathToFile);
-    }
-
-    public void arrayList2ser(ArrayList<int[]> l, String pathToFile) {
-
-        File targetFile = new File(pathToFile);
-        File parent = targetFile.getParentFile();
-        if (!parent.exists() && !parent.mkdirs()) {
-            throw new IllegalStateException("Couldn't create dir: " + parent);
-        }
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(targetFile))) {
-            out.writeObject(l);
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-    }
 }

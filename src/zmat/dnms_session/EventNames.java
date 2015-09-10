@@ -171,7 +171,6 @@ public class EventNames {
 
         trans[78] = "CorrectRejection4";
         
-
         return trans;
 
     }

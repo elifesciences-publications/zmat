@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import zmat.dnms_session.DataProcessor;
 import zmat.dnms_session.Day;
+import zmat.dnms_session.EventType;
 import zmat.dnms_session.FileParser;
 import zmat.dnms_session.Session;
 import zmat.dnms_session.Trial;
@@ -33,7 +34,7 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 1.61");
+        System.out.println("zmat ver 1.65");
     }
 
     public void setMinLick(int minLick) {
@@ -72,6 +73,52 @@ public class Zmat {
         return allTrials.toArray(new int[allTrials.size()][]);
     }
 
+    public int[][] getTrialLick(int trialNum) {
+        ArrayList<int[]> allTrials = new ArrayList<>();
+
+        if (days == null) {
+            return null;
+        }
+
+        for (Day d : days) {
+            int trialCount = 0;
+            int matchCount = 0;
+            int nmCount = 0;
+            day:
+            for (Session s : d.getSessions()) {
+                for (Trial t : s.getTrails()) {
+                    int currentCount;
+                    if (trialNum > 0 && trialCount >= trialNum) {
+                        break day;
+                    }
+                    zmat.lick_session.LickTrial lickT = (zmat.lick_session.LickTrial) t;
+
+                    if (t.getResponse() == EventType.Hit || t.getResponse() == EventType.Miss) {
+                        matchCount++;
+                        currentCount = matchCount;
+                    } else {
+                        nmCount++;
+                        currentCount = nmCount;
+                    }
+
+                    if (lickT.getAllLick().length == 0) {
+                        allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3});
+                    } else {
+                        for (int i : lickT.getAllLick()) {
+                            allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3});
+                        }
+                    }
+                    trialCount++;
+                }
+            }
+        }
+        return allTrials.toArray(new int[allTrials.size()][]);
+    }
+
+    public void setSessDisp(boolean b){
+        Day.setDisplaySessionNumber(b);
+    }
+    
     public void processFile(String... s) {
         dp = new DataProcessor();
         dp.setMinLick(this.minLick);
@@ -94,6 +141,23 @@ public class Zmat {
         dp.processFile(s);
     }
 
+        public void processGoNogoFile(String... s) {
+        dp = new DataProcessor() {
+            @Override
+            public void processFile(String... s) {
+                FileParser fp = new zmat.sessionparser.gonogoparser.FileParser();
+                fp.parseFiles(s);
+                days = fp.getDays();
+                if (days.size() < 1) {
+                    System.out.println("No suitable records found.");
+                }
+            }
+        };
+        dp.setMinLick(this.minLick);
+        dp.processFile(s);
+    }
+    
+    
     public void processCatchFile(String... s) {
         dp = new DataProcessor() {
             @Override
@@ -111,7 +175,7 @@ public class Zmat {
     }
 
     public void processLickFile(String... s) {
-        days = new LinkedList<>();
+//        days = new LinkedList<>();
         for (String f : s) {
             dp = new DataProcessor() {
                 @Override
@@ -121,7 +185,7 @@ public class Zmat {
                             : new zmat.txtFile.TxtFileParser();
                     fp.parseFiles(s);
                     days = fp.getDays();
-                    if (days.size() < 1) {
+                    if (days.isEmpty()) {
                         System.out.println("No suitable records found.");
                     }
                     for (Day d : days) {

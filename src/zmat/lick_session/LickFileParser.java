@@ -23,7 +23,8 @@ public class LickFileParser extends zmat.dnms_session.FileParser {
 
     @Override
     protected Queue<Session> processFile(File f) {
-        int trialStartTime = 0;
+        int odor2Start = 0;
+        int trialStart = 0;
         int delayLength = 0;
         ArrayList<Integer[]> licks = new ArrayList<>();
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
@@ -41,8 +42,9 @@ public class LickFileParser extends zmat.dnms_session.FileParser {
             for (int[] evt : eventList) {
                 switch (evt[2]) {
                     case 0:
-                        licks.add(new Integer[]{evt[0] - trialStartTime, evt[3]});
+                        licks.add(new Integer[]{evt[0], evt[3]});
                         break;
+
                     case 61:
                         switch (evt[3]) {
                             case 0:
@@ -59,11 +61,11 @@ public class LickFileParser extends zmat.dnms_session.FileParser {
                     case 7:
                         response = responses[evt[2] - 4];
                         if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
-                            currentTrials.offer(new LickTrial(firstOdor, secondOdor, response, laserOn, licks, delayLength));
+                            currentTrials.offer(new LickTrial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start));
                         }
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
-                        licks = new ArrayList<>();
+//                        licks = new ArrayList<>();
                         laserOn = false;
                         break;
                     case 9:
@@ -71,16 +73,22 @@ public class LickFileParser extends zmat.dnms_session.FileParser {
                         if (evt[3] != 0) {
                             if (firstOdor == EventType.unknown) {
                                 firstOdor = odors[evt[2] - 9];
-                                trialStartTime = evt[0];
-                                licks = new ArrayList<>();
+//                                licks = new ArrayList<>();
+                                trialStart = evt[0];
                             } else {
                                 secondOdor = odors[evt[2] - 9];
-                                delayLength = evt[0] - trialStartTime - 1000;
+                                odor2Start = evt[0];
+                                delayLength = evt[0] - trialStart - 1000;
                             }
                         }
                         break;
                     case 65:
                         laserOn = (evt[3] == 1);
+                    case 58:
+                    case 59:
+
+                        licks = new ArrayList<>();
+
                         break;
                 }
             }

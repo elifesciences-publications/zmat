@@ -16,6 +16,7 @@ public class Day {
 
     protected Queue<Session> sessions;
     protected String fileName;
+    static protected boolean displaySessionNumber;
 
     public Day(String fileName, Queue<Session> q) {
         this.fileName = fileName;
@@ -33,7 +34,9 @@ public class Day {
             }
         }
         sessions = q;
-        System.out.println(Integer.toString(sessions.size()) + " sessions.");
+        if (displaySessionNumber) {
+            System.out.println(Integer.toString(sessions.size()) + " sessions.");
+        }
 
     }
 
@@ -48,6 +51,9 @@ public class Day {
     public Queue<Session> getSessions() {
         return sessions;
     }
-    
-    
+
+    public static void setDisplaySessionNumber(boolean displaySessionNumber) {
+        Day.displaySessionNumber = displaySessionNumber;
+    }
+
 }
