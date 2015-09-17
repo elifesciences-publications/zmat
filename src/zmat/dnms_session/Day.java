@@ -16,7 +16,6 @@ public class Day {
 
     protected Queue<Session> sessions;
     protected String fileName;
-    static protected boolean displaySessionNumber;
 
     public Day(String fileName, Queue<Session> q) {
         this.fileName = fileName;
@@ -24,9 +23,15 @@ public class Day {
     }
 
     public void removeBadSessions(int trialNum, boolean fullSession, int lickCount) {
+        zmat.debugger.log(10, trialNum + " minimum trial/session");
+        zmat.debugger.log(10, lickCount + " minimum lick attempt");
         Queue<Session> q = new LinkedList<>();
+        if (null == sessions) {
+            return;
+        }
         for (Session session : sessions) {
 //            System.out.println(session.getTrialNumber()+" trials");
+            zmat.debugger.log(5, session.getTrialNumber() + " trials in a session");
             boolean sessionFull = (fullSession && session.getTrialNumber() == trialNum) || !fullSession;
             if (sessionFull && session.getLickCount() >= lickCount) {
                 q.offer(session);
@@ -34,10 +39,7 @@ public class Day {
             }
         }
         sessions = q;
-        if (displaySessionNumber) {
-            System.out.println(Integer.toString(sessions.size()) + " sessions.");
-        }
-
+        zmat.debugger.log(10, Integer.toString(sessions.size()) + " sessions after remove bad sessons");
     }
 
     public int getSessionNumber() {
@@ -50,10 +52,6 @@ public class Day {
 
     public Queue<Session> getSessions() {
         return sessions;
-    }
-
-    public static void setDisplaySessionNumber(boolean displaySessionNumber) {
-        Day.displaySessionNumber = displaySessionNumber;
     }
 
 }

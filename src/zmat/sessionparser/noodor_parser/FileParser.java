@@ -36,6 +36,13 @@ public class FileParser extends zmat.dnms_session.FileParser {
 
             for (int[] evt : eventList) {
                 switch (evt[2]) {
+
+                    case 1:
+                        if (evt[3] == 1) {
+                            break;
+                        }
+                        evt[2] = 61;
+                        evt[3] = 0;
                     case 61:
                         switch (evt[3]) {
                             case 1:

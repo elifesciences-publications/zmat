@@ -84,7 +84,9 @@ public class EventParser {
 
         int[] timeNumbers = new int[4];
         for (int i = 4; i > 0; i--) {
-            timeNumbers[4 - i] = splitLine.length > i ? Integer.parseInt(splitLine[i]) : 0;
+            if (splitLine.length > i && splitLine[i].matches("\\d+")) {
+                timeNumbers[4 - i] = Integer.parseInt(splitLine[i]);
+            }
         }
         int absTime = timeNumbers[0]
                 + timeNumbers[1] * 1000

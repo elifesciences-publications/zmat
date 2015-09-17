@@ -34,11 +34,15 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 1.65");
+        System.out.println("zmat ver 1.68");
     }
 
     public void setMinLick(int minLick) {
         this.minLick = minLick;
+    }
+    
+    public void setDebugLevel(int l){
+        debugger.level=l;
     }
 
     public int[][] ser2mat(String s) {
@@ -60,12 +64,11 @@ public class Zmat {
             int trialCount = 0;
             day:
             for (Session s : d.getSessions()) {
-
                 for (Trial t : s.getTrails()) {
                     if (trialNum > 0 && trialCount >= trialNum) {
                         break day;
                     }
-                    allTrials.add(((zmat.lick_session.LickTrial) t).getDelayLick());
+                    allTrials.add(t.getDelayLick());
                     trialCount++;
                 }
             }
@@ -91,7 +94,6 @@ public class Zmat {
                     if (trialNum > 0 && trialCount >= trialNum) {
                         break day;
                     }
-                    zmat.lick_session.LickTrial lickT = (zmat.lick_session.LickTrial) t;
 
                     if (t.getResponse() == EventType.Hit || t.getResponse() == EventType.Miss) {
                         matchCount++;
@@ -101,10 +103,10 @@ public class Zmat {
                         currentCount = nmCount;
                     }
 
-                    if (lickT.getAllLick().length == 0) {
+                    if (t.getAllLick().length == 0) {
                         allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3});
                     } else {
-                        for (int i : lickT.getAllLick()) {
+                        for (int i : t.getAllLick()) {
                             allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3});
                         }
                     }
@@ -115,14 +117,12 @@ public class Zmat {
         return allTrials.toArray(new int[allTrials.size()][]);
     }
 
-    public void setSessDisp(boolean b){
-        Day.setDisplaySessionNumber(b);
-    }
-    
     public void processFile(String... s) {
         dp = new DataProcessor();
         dp.setMinLick(this.minLick);
         dp.processFile(s);
+        days=dp.getDays();
+
     }
 
     public void processQtrFile(String... s) {
@@ -141,7 +141,7 @@ public class Zmat {
         dp.processFile(s);
     }
 
-        public void processGoNogoFile(String... s) {
+    public void processGoNogoFile(String... s) {
         dp = new DataProcessor() {
             @Override
             public void processFile(String... s) {
@@ -156,8 +156,7 @@ public class Zmat {
         dp.setMinLick(this.minLick);
         dp.processFile(s);
     }
-    
-    
+
     public void processCatchFile(String... s) {
         dp = new DataProcessor() {
             @Override
@@ -172,31 +171,6 @@ public class Zmat {
         };
         dp.setMinLick(this.minLick);
         dp.processFile(s);
-    }
-
-    public void processLickFile(String... s) {
-//        days = new LinkedList<>();
-        for (String f : s) {
-            dp = new DataProcessor() {
-                @Override
-                public void processFile(String... s) {
-                    FileParser fp = s[0].endsWith(".ser")
-                            ? new zmat.lick_session.LickFileParser()
-                            : new zmat.txtFile.TxtFileParser();
-                    fp.parseFiles(s);
-                    days = fp.getDays();
-                    if (days.isEmpty()) {
-                        System.out.println("No suitable records found.");
-                    }
-                    for (Day d : days) {
-                        d.removeBadSessions(20, true, minLick);
-                    }
-                }
-            };
-            dp.setMinLick(this.minLick);
-            dp.processFile(new String[]{f});
-            days.addAll(dp.getDays());
-        }
     }
 
     public int[][] getPerf(int lightOn, int trialLimit) {

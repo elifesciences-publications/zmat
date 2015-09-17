@@ -12,7 +12,6 @@ import java.util.Queue;
 import zmat.dnms_session.EventType;
 import zmat.dnms_session.Session;
 import zmat.dnms_session.Trial;
-import zmat.lick_session.LickTrial;
 
 /**
  *
@@ -52,12 +51,12 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
      return sessions;
      }
      */
-    private void offerSessions(Queue<Session> sessions, Queue<LickTrial> trials) {
+    private void offerSessions(Queue<Session> sessions, Queue<Trial> trials) {
         if (trials.size() == 20) {
             Queue<Trial> laserTrials = new LinkedList<>();
             int idx = 0;
-            for (LickTrial t : trials) {
-                laserTrials.add(new LickTrial(t.getFirstOdor(), t.getSecondOdor(), t.getResponse(), idx % 2 == 1, t.getLickQueue(), t.getDelayLength(),t.getOdor2Start()));
+            for (Trial t : trials) {
+                laserTrials.add(new Trial(t.getFirstOdor(), t.getSecondOdor(), t.getResponse(), idx % 2 == 1, t.getLickQueue(), t.getDelayLength(), t.getOdor2Start()));
                 idx++;
             }
             sessions.offer(new Session(laserTrials));
@@ -69,21 +68,25 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
 
         @SuppressWarnings("unchecked")
         List<Event> eventList = EventParser.getEventList(f);
-        Queue<LickTrial> currentTrials = new LinkedList<>();
+        Queue<Trial> currentTrials = new LinkedList<>();
         Queue<Session> sessions = new LinkedList<>();
         EventType firstOdor = EventType.unknown;
         EventType secondOdor = EventType.unknown;
         EventType response;
         int odor2Start = 0;
         int delayLength = 0;
-        int trialStart=0;
+        int trialStart = 0;
         ArrayList<Integer[]> licks = new ArrayList<>();
 
+        int lastLick = 0;
         for (int idx = eventList.size(); idx > 0; idx--) {
             Event e = eventList.get(idx - 1);
             switch (e.getEventType()) {
                 case Lick:
-                    licks.add(new Integer[]{e.getAbsTime(), 1});
+                    if (e.getAbsTime() - lastLick > 50) {
+                        licks.add(new Integer[]{e.getAbsTime(), 1});
+                        lastLick=e.getAbsTime();
+                    }
                     break;
                 case NewSession:
                     if (currentTrials.size() > 0) {
@@ -97,7 +100,7 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
                 case FalseAlarm:
                     response = e.getEventType();
                     if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
-                        currentTrials.offer(new LickTrial(firstOdor, secondOdor, response, false, licks, delayLength,odor2Start));
+                        currentTrials.offer(new Trial(firstOdor, secondOdor, response, false, licks, delayLength, odor2Start));
                     }
                     firstOdor = EventType.unknown;
                     secondOdor = EventType.unknown;
@@ -108,7 +111,7 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
                     if (firstOdor == EventType.unknown) {
                         firstOdor = e.getEventType();
                         licks = new ArrayList<>();
-                        trialStart=e.getAbsTime();
+                        trialStart = e.getAbsTime();
                     } else {
                         secondOdor = e.getEventType();
                         odor2Start = e.getAbsTime();

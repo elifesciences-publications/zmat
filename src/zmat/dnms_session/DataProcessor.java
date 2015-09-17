@@ -8,6 +8,7 @@ package zmat.dnms_session;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import zmat.debugger;
 
 /**
  *
@@ -30,24 +31,25 @@ public class DataProcessor {
     public void processFile(String... s) {
         days = new LinkedList<>();
         for (String f : s) {
-            days.addAll(f.endsWith(".ser")
-                    ? new FileParser().parseFiles(f).getDays()
-                    : new zmat.txtFile.TxtFileParser().parseFiles(f).getDays());
-        }
+            FileParser fp = f.endsWith(".ser")
+                    ? new FileParser()
+                    : new zmat.txtFile.TxtFileParser();
+            fp.parseFiles(f);
 
-        if (days.size() < 1) {
+            days.addAll(fp.getDays());
+        }
+        if (days.isEmpty()) {
             System.out.println("No suitable records found.");
         }
         for (Day d : days) {
             d.removeBadSessions(20, true, minLick);
         }
-
     }
 
     public int[][] getPerf(int lightOn, int trialLimit) {
         ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
-            if (d.sessions.size() < 2) {
+            if (d.sessions == null || d.sessions.size() < 5) {
                 continue;
             }
             int trialCount = 0;
@@ -58,11 +60,13 @@ public class DataProcessor {
                 int miss = 0;
                 int totalTrial = 0;
                 int correctRejection = 0;
+                int rewardedLick = 0;
+                int unrewardedLick = 0;
 
                 for (Trial t : s.trials) {
                     if (trialLimit > 0 && trialCount >= trialLimit) {
                         if (totalTrial > 0) {
-                            sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                            sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick});
                         }
                         break day;
                     }
@@ -79,21 +83,25 @@ public class DataProcessor {
                         switch (t.response) {
                             case Hit:
                                 hit++;
+                                rewardedLick += t.getResponseLick();
                                 break;
                             case FalseAlarm:
                                 fa++;
+                                unrewardedLick += t.getResponseLick();
                                 break;
                             case Miss:
                                 miss++;
+                                rewardedLick += t.getResponseLick();
                                 break;
                             case CorrectRejection:
                                 correctRejection++;
+                                unrewardedLick += t.getResponseLick();
                                 break;
                         }
                     }
                 }
                 if (totalTrial > 0) {
-                    sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial});
+                    sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick});
                 }
             }
         }
@@ -104,7 +112,7 @@ public class DataProcessor {
     public int[][] getCatchPerf(int catchTrial, int trialLimit) {
         ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
-            if (d.sessions.size() < 2) {
+            if (d.sessions.size() < 5) {
                 continue;
             }
             int trialCount = 0;
