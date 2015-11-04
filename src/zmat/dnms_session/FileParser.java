@@ -102,6 +102,7 @@ public class FileParser {
                         break;
                     case 65:
                         laserOn = (evt[3] == 1);
+                        break;
                     case 58:
                     case 59:
 
