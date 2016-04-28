@@ -23,6 +23,7 @@ import zmat.dnms_session.Trial;
 public class Zmat {
 
     private int minLick = 0;
+    private int fullSession = 20;
     private DataProcessor dp;
     private Queue<Day> days;
     private ArrayList<String> rootFiles;
@@ -40,9 +41,13 @@ public class Zmat {
     public void setMinLick(int minLick) {
         this.minLick = minLick;
     }
-    
-    public void setDebugLevel(int l){
-        debugger.level=l;
+
+    public void setFullSession(int fullSession) {
+        this.fullSession = fullSession;
+    }
+
+    public void setDebugLevel(int l) {
+        debugger.level = l;
     }
 
     public int[][] ser2mat(String s) {
@@ -104,10 +109,10 @@ public class Zmat {
                     }
 
                     if (t.getAllLick().length == 0) {
-                        allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3});
+                        allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3, t.withLaserON() ? 1 : 0});
                     } else {
                         for (int i : t.getAllLick()) {
-                            allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3});
+                            allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3, t.withLaserON() ? 1 : 0});
                         }
                     }
                     trialCount++;
@@ -120,8 +125,9 @@ public class Zmat {
     public void processFile(String... s) {
         dp = new DataProcessor();
         dp.setMinLick(this.minLick);
+        dp.setFullSession(fullSession);
         dp.processFile(s);
-        days=dp.getDays();
+        days = dp.getDays();
 
     }
 
@@ -138,6 +144,7 @@ public class Zmat {
             }
         };
         dp.setMinLick(this.minLick);
+        dp.setFullSession(fullSession);
         dp.processFile(s);
     }
 
@@ -154,6 +161,7 @@ public class Zmat {
             }
         };
         dp.setMinLick(this.minLick);
+        dp.setFullSession(fullSession);
         dp.processFile(s);
     }
 
@@ -169,6 +177,7 @@ public class Zmat {
                 }
             }
         };
+        dp.setFullSession(fullSession);
         dp.setMinLick(this.minLick);
         dp.processFile(s);
     }

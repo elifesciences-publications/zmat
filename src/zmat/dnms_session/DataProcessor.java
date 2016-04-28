@@ -8,7 +8,6 @@ package zmat.dnms_session;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import zmat.debugger;
 
 /**
  *
@@ -18,6 +17,7 @@ public class DataProcessor {
 
     protected Queue<Day> days;
     protected int minLick = 16;
+    protected int fullSession = 20;
 
     public enum listType {
 
@@ -27,6 +27,11 @@ public class DataProcessor {
     public void setMinLick(int minLick) {
         this.minLick = minLick;
     }
+
+    public void setFullSession(int fullSession) {
+        this.fullSession = fullSession;
+    }
+    
 
     public void processFile(String... s) {
         days = new LinkedList<>();
@@ -42,7 +47,7 @@ public class DataProcessor {
             System.out.println("No suitable records found.");
         }
         for (Day d : days) {
-            d.removeBadSessions(20, true, minLick);
+            d.removeBadSessions(fullSession, true, minLick);
         }
     }
 
