@@ -31,7 +31,6 @@ public class DataProcessor {
     public void setFullSession(int fullSession) {
         this.fullSession = fullSession;
     }
-    
 
     public void processFile(String... s) {
         days = new LinkedList<>();
@@ -69,6 +68,7 @@ public class DataProcessor {
                 int unrewardedLick = 0;
 
                 for (Trial t : s.trials) {
+
                     if (trialLimit > 0 && trialCount >= trialLimit) {
                         if (totalTrial > 0) {
                             sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick});
@@ -85,7 +85,7 @@ public class DataProcessor {
                         totalTrial++;
                         trialCount++;
 
-                        switch (t.response) {
+                        switch (t.getResponse()) {
                             case Hit:
                                 hit++;
                                 rewardedLick += t.getResponseLick();
@@ -142,7 +142,7 @@ public class DataProcessor {
                         totalTrial++;
                         trialCount++;
 
-                        switch (t.response) {
+                        switch (t.getResponse()) {
                             case Hit:
                                 hit++;
                                 break;
@@ -171,4 +171,5 @@ public class DataProcessor {
         System.out.println(days.size() + " days");
         return days;
     }
+
 }

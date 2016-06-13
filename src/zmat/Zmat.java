@@ -12,7 +12,6 @@ import java.util.Queue;
 import zmat.dnms_session.DataProcessor;
 import zmat.dnms_session.Day;
 import zmat.dnms_session.EventType;
-import zmat.dnms_session.FileParser;
 import zmat.dnms_session.Session;
 import zmat.dnms_session.Trial;
 
@@ -22,11 +21,11 @@ import zmat.dnms_session.Trial;
  */
 public class Zmat {
 
-    private int minLick = 0;
-    private int fullSession = 20;
-    private DataProcessor dp;
-    private Queue<Day> days;
-    private ArrayList<String> rootFiles;
+    int minLick = 0;
+    int fullSession = 20;
+    DataProcessor dp;
+    Queue<Day> days;
+    ArrayList<String> rootFiles;
 
     /**
      * @param args the command line arguments
@@ -131,64 +130,11 @@ public class Zmat {
 
     }
 
-    public void processQtrFile(String... s) {
-        dp = new DataProcessor() {
-            @Override
-            public void processFile(String... s) {
-                FileParser fp = new zmat.sessionparser.quarterparser.FileParser();
-                fp.parseFiles(s);
-                days = fp.getDays();
-                if (days.size() < 1) {
-                    System.out.println("No suitable records found.");
-                }
-            }
-        };
-        dp.setMinLick(this.minLick);
-        dp.setFullSession(fullSession);
-        dp.processFile(s);
-    }
-
-    public void processGoNogoFile(String... s) {
-        dp = new DataProcessor() {
-            @Override
-            public void processFile(String... s) {
-                FileParser fp = new zmat.sessionparser.gonogoparser.FileParser();
-                fp.parseFiles(s);
-                days = fp.getDays();
-                if (days.size() < 1) {
-                    System.out.println("No suitable records found.");
-                }
-            }
-        };
-        dp.setMinLick(this.minLick);
-        dp.setFullSession(fullSession);
-        dp.processFile(s);
-    }
-
-    public void processCatchFile(String... s) {
-        dp = new DataProcessor() {
-            @Override
-            public void processFile(String... s) {
-                FileParser fp = new zmat.sessionparser.noodor_parser.FileParser();
-                fp.parseFiles(s);
-                days = fp.getDays();
-                if (days.size() < 1) {
-                    System.out.println("No suitable records found.");
-                }
-            }
-        };
-        dp.setFullSession(fullSession);
-        dp.setMinLick(this.minLick);
-        dp.processFile(s);
-    }
 
     public int[][] getPerf(int lightOn, int trialLimit) {
         return dp.getPerf(lightOn, trialLimit);
     }
 
-    public int[][] getCatchPerf(int isCatch, int trialLimit) {
-        return dp.getCatchPerf(isCatch, trialLimit);
-    }
 
     public ArrayList<String> updateFilesList(String[] rootPath) {
         if (rootPath == null || rootPath.length == 0) {
@@ -217,7 +163,7 @@ public class Zmat {
         return fileList;
     }
 
-    private ArrayList<String> listFilesList(String rootPath, String[] elements) {
+    ArrayList<String> listFilesList(String rootPath, String[] elements) {
         ArrayList<String> fileList = new ArrayList<>();
         if (rootPath == null) {
             return null;
