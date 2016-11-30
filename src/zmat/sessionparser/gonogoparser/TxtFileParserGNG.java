@@ -1,8 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.txtFile;
+package zmat.sessionparser.gonogoparser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,45 +13,17 @@ import java.util.Queue;
 import zmat.dnms_session.EventType;
 import zmat.dnms_session.Session;
 import zmat.dnms_session.Trial;
+import zmat.txtFile.Event;
+import zmat.txtFile.EventParser;
+import zmat.txtFile.TxtFileParser;
 
 /**
  *
  * @author Libra
  */
-public class TxtFileParser extends zmat.dnms_session.FileParser {
+public class TxtFileParserGNG extends TxtFileParser {
 
-    /*
-     @Override
-     protected Queue<Session> processFile(File f) {
-     //        System.out.println("txt File");
-     List<Event> eventList = EventParser.getEventList(f);
-     int refTime = -1;
-     Queue<Trial> currentTrials = new LinkedList<>();
-     Queue<Session> sessions = new LinkedList<>();
-     for (int i = eventList.size() - 1; i >= 0;) {
-     if (eventList.get(i).isNewSession()) {
-     if (currentTrials.size() > 0) {
-     offerSessions(sessions, currentTrials);
-     currentTrials = new LinkedList<>();
-     }
-     i--;
-     } else if (i > 1 && eventList.get(i).isOdor() && eventList.get(i - 1).isOdor()
-     && eventList.get(i - 2).isResponse()) {
-     refTime = refTime > 0 ? refTime : eventList.get(i).getAbsTime();
-     currentTrials.offer(new Trial(eventList.get(i).getEventType(),
-     eventList.get(i - 1).getEventType(),
-     eventList.get(i - 2).getEventType(), false));
-     i -= 3;
-     } else {
-     i--;
-     }
-     }
-     if (currentTrials.size() > 0) {
-     offerSessions(sessions, currentTrials);
-     }
-     return sessions;
-     }
-     */
+    @Override
     protected void offerSessions(Queue<Session> sessions, Queue<Trial> trials) {
         if (trials.size() == 20) {
             Queue<Trial> laserTrials = new LinkedList<>();
@@ -85,7 +58,7 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
                 case Lick:
                     if (e.getAbsTime() - lastLick > 50) {
                         licks.add(new Integer[]{e.getAbsTime(), 1});
-                        lastLick=e.getAbsTime();
+                        lastLick = e.getAbsTime();
                     }
                     break;
                 case NewSession:
@@ -108,15 +81,16 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
                     break;
                 case OdorA:
                 case OdorB:
-                    if (firstOdor == EventType.unknown) {
-                        firstOdor = e.getEventType();
-                        licks = new ArrayList<>();
-                        trialStart = e.getAbsTime();
-                    } else {
-                        secondOdor = e.getEventType();
-                        odor2Start = e.getAbsTime();
-                        delayLength = e.getAbsTime() - trialStart - 1000;
-                    }
+//                    if (firstOdor == EventType.unknown) {
+//                        firstOdor = e.getEventType();
+//                        licks = new ArrayList<>();
+//                        trialStart = e.getAbsTime();
+//                    } else {
+                    firstOdor = EventType.OdorB;
+                    secondOdor = e.getEventType();
+                    odor2Start = e.getAbsTime();
+                    delayLength = e.getAbsTime() - trialStart - 1000;
+//                    }
                     break;
             }
         }
@@ -127,5 +101,4 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
         return sessions;
 
     }
-
 }

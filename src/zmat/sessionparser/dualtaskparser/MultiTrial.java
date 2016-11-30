@@ -12,18 +12,18 @@ import zmat.dnms_session.EventType;
  *
  * @author Libra
  */
-public class DualTrial extends zmat.dnms_session.Trial {
+public class MultiTrial extends zmat.dnms_session.Trial {
 
-    EventType distractorOdor;
-    EventType distractorResponse;
+    ArrayList<EventType> distractorOdor;
+    ArrayList<EventType> distractorResponse;
 
-    public DualTrial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int odor2Start, EventType distractorOdor, EventType distractorResponse) {
+    public MultiTrial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int odor2Start, ArrayList<EventType> distractorOdor, ArrayList<EventType> distractorResponse) {
         super(firstOdor, secondOdor, response, laserON, licks, delayLength, odor2Start);
         this.distractorOdor=distractorOdor;
         this.distractorResponse=distractorResponse;
     }
 
-    public EventType getDistractorResponse() {
+    public ArrayList<EventType> getDistractorResponse() {
         return distractorResponse;
     }
 
@@ -34,9 +34,8 @@ public class DualTrial extends zmat.dnms_session.Trial {
         }
         return response;
     }
-
-    public EventType getDistractorOdor() {
-        return distractorOdor;
-    }
+    
+    
+    
     
 }

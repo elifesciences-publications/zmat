@@ -214,10 +214,10 @@ public class Zmat {
         file:
         for (String s : this.rootFiles) {
             for (String e : elements) {
-                if ((!e.startsWith("-")) && !s.contains(e)) {
+                if ((!e.startsWith("-")) && !s.toLowerCase().contains(e.toLowerCase())) {
                     continue file;
                 }
-                if (e.startsWith("-") && s.contains(e.substring(1))) {
+                if (e.startsWith("-") && s.toLowerCase().contains(e.substring(1).toLowerCase())) {
                     continue file;
                 }
             }

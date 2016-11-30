@@ -19,6 +19,7 @@ public class ZmatGNG extends Zmat {
         dp = new DataProcessor() {
             @Override
             public void processFile(String... s) {
+                
                 FileParser fp = new zmat.sessionparser.gonogoparser.FileParser();
                 fp.parseFiles(s);
                 days = fp.getDays();
