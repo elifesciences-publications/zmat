@@ -34,7 +34,7 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 1.68");
+        System.out.println("zmat ver 1.69a");
     }
 
     public void setMinLick(int minLick) {
@@ -66,15 +66,19 @@ public class Zmat {
 
         for (Day d : days) {
             int trialCount = 0;
+            int sCount = 0;
             day:
             for (Session s : d.getSessions()) {
-                for (Trial t : s.getTrails()) {
-                    if (trialNum > 0 && trialCount >= trialNum) {
-                        break day;
+                if (sCount > 0) {
+                    for (Trial t : s.getTrails()) {
+                        if (trialNum > 0 && trialCount >= trialNum) {
+                            break day;
+                        }
+                        allTrials.add(t.getDelayLick());
+                        trialCount++;
                     }
-                    allTrials.add(t.getDelayLick());
-                    trialCount++;
                 }
+                sCount++;
             }
         }
         return allTrials.toArray(new int[allTrials.size()][]);
@@ -91,8 +95,10 @@ public class Zmat {
             int trialCount = 0;
             int matchCount = 0;
             int nmCount = 0;
+            int sIdx = 0;
             day:
             for (Session s : d.getSessions()) {
+//                if (sIdx > 1) {
                 for (Trial t : s.getTrails()) {
                     int currentCount;
                     if (trialNum > 0 && trialCount >= trialNum) {
@@ -116,8 +122,11 @@ public class Zmat {
                     }
                     trialCount++;
                 }
+//                }
+//                sIdx++;
             }
         }
+        System.out.println("Trial#, Time (from test start), Response(Hit,Miss,FA,CR,ABT), Laser(1 on 0 off)");
         return allTrials.toArray(new int[allTrials.size()][]);
     }
 
@@ -130,11 +139,30 @@ public class Zmat {
 
     }
 
-
-    public int[][] getPerf(int lightOn, int trialLimit) {
-        return dp.getPerf(lightOn, trialLimit);
+    public int[][] getPerf(int lightOn, int trialLimit, boolean onlyWellTrained) {
+        System.out.println("Light_On,Trial_Limit,Only_Well_Trianed");
+        System.out.println("hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick, abortTrial");
+        return dp.getPerf(lightOn, trialLimit, onlyWellTrained);
     }
 
+    public int[][] getFactorSeq() {
+        ArrayList<int[]> rtn = new ArrayList<>();
+        for (Day day : dp.getDays()) {
+            for (Session sess : day.getSessions()) {
+                for (Trial t : sess.getTrails()) {
+                    rtn.add(new int[]{t.getFirstOdor().ordinal(),
+                        t.getSecondOdor().ordinal(),
+                        t.withLaserON() ? 1 : 0,
+                        t.getResponse().ordinal()});
+                }
+            }
+        }
+        return rtn.toArray(new int[rtn.size()][]);
+    }
+
+    public int getDaysWellTrained() {
+        return dp.getDaysWellTrained();
+    }
 
     public ArrayList<String> updateFilesList(String[] rootPath) {
         if (rootPath == null || rootPath.length == 0) {

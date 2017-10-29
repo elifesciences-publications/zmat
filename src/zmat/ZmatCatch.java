@@ -33,8 +33,8 @@ public class ZmatCatch extends Zmat {
     }
 
     @Override
-    public int[][] getPerf(int isCatch, int trialLimit) {
-        return dp.getCatchPerf(isCatch, trialLimit);
+    public int[][] getPerf(int isCatch, int trialLimit,boolean onlyWellTrained) {
+        return dp.getCatchPerf(isCatch, trialLimit,onlyWellTrained);
     }
 
 }

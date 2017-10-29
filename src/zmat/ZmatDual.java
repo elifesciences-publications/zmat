@@ -31,7 +31,8 @@ public class ZmatDual extends Zmat {
                     System.out.println("No suitable records found.");
                 }
                 for (Day d : days) {
-                    d.removeBadSessions(fullSession, true, minLick);
+                    d.testForWellTrainState();
+                    d.removeBadSessions(fullSession, minLick);
                 }
             }
         };

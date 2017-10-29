@@ -17,25 +17,34 @@ public class Day {
     protected Queue<Session> sessions;
     protected String fileName;
 
+    protected WellTrainState isWellTrained = WellTrainState.UNKNOWN;
+
+    private enum WellTrainState {
+        TRUE, FALSE, UNKNOWN;
+    }
+
     public Day(String fileName, Queue<Session> q) {
         this.fileName = fileName;
         sessions = q;
     }
 
-    public void removeBadSessions(int trialNum, boolean fullSession, int lickCount) {
+    public void removeBadSessions(int trialNum, int lickCount) {
         zmat.debugger.log(10, trialNum + " minimum trial/session");
         zmat.debugger.log(10, lickCount + " minimum lick attempt");
         Queue<Session> q = new LinkedList<>();
-        if (null == sessions) {
+        if (null == sessions || sessions.isEmpty()) {
             return;
         }
+        zmat.debugger.log(10, Integer.toString(sessions.size()) + " sessions before remove bad sessons");
         for (Session session : sessions) {
 //            System.out.println(session.getTrialNumber()+" trials");
-            zmat.debugger.log(5, session.getTrialNumber() + " trials in a session");
-            boolean sessionFull = (fullSession && session.getTrialNumber() == trialNum) || !fullSession;
+//            zmat.debugger.log(5, session.getTrialNumber() + " trials in a session");
+            boolean sessionFull = trialNum < 1 || (session.getTrialNumber() == trialNum);
             if (sessionFull && session.getLickCount() >= lickCount) {
                 q.offer(session);
 //                System.out.println("add Session");
+            } else {
+//                System.out.println("Removed bad session.");
             }
         }
         sessions = q;
@@ -54,4 +63,37 @@ public class Day {
         return sessions;
     }
 
+    public boolean isWellTrained() {
+        if (this.isWellTrained == WellTrainState.UNKNOWN) {
+            throw new IllegalStateException("Welltrain state not tested.");
+        }
+        return this.isWellTrained == WellTrainState.TRUE;
+    }
+
+    public void testForWellTrainState() {
+        LinkedList<Trial> consecutive = new LinkedList<>();
+        outer:
+        for (Session s : this.sessions) {
+            for (Trial t : s.trials) {
+                consecutive.add(t);
+                if (consecutive.size() >= 40) {
+                    int sumCorrect = 0;
+                    for (Trial tt : consecutive) {
+                        if (tt.isGoodChoice()) {
+                            sumCorrect++;
+                        }
+                    }
+                    if (sumCorrect >= 32) {
+                        isWellTrained = WellTrainState.TRUE;
+                        break outer;
+                    } else {
+                        consecutive.pop();
+                    }
+                }
+            }
+        }
+        if (this.isWellTrained == WellTrainState.UNKNOWN) {
+            this.isWellTrained = WellTrainState.FALSE;
+        }
+    }
 }

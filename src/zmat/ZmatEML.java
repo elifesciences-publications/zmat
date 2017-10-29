@@ -37,11 +37,11 @@ public class ZmatEML extends Zmat {
     }
 
     @Override
-    public int[][] getPerf(int lightOn, int trialLimit) {
+    public int[][] getPerf(int lightOn, int trialLimit, boolean onlyWellTrained) {
         this.days = dp.getDays();
         ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
-            if (d.getSessions() == null || d.getSessions().size() < 5) {
+            if (d.getSessions() == null || d.getSessions().size() < 5 || (onlyWellTrained && !d.isWellTrained())) {
                 continue;
             }
             int trialCount = 0;

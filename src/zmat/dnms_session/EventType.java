@@ -12,5 +12,5 @@ public enum EventType {
 //      LICK,WATER,
       Lick,OdorA,OdorB,Hit,Miss,FalseAlarm,CorrectRejection,
       NewSession,Others,dnmsLaser,dnmsEarlyLaser,
-      dnmsLateLaser,unknown;
+      dnmsLateLaser,unknown,ABORT_TRIAL;
 }

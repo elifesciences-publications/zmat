@@ -65,7 +65,6 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
 
     @Override
     protected Queue<Session> processFile(File f) {
-
         @SuppressWarnings("unchecked")
         List<Event> eventList = EventParser.getEventList(f);
         Queue<Trial> currentTrials = new LinkedList<>();

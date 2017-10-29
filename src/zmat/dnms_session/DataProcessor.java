@@ -19,7 +19,7 @@ public class DataProcessor {
     protected int minLick = 16;
     protected int fullSession = 20;
 
-    public enum listType {
+    public enum ListType {
 
         CORRECT_RATE, FALSE_ALARM, MISS;
     }
@@ -45,17 +45,21 @@ public class DataProcessor {
         if (days.isEmpty()) {
             System.out.println("No suitable records found.");
         }
+
         for (Day d : days) {
-            d.removeBadSessions(fullSession, true, minLick);
+            d.testForWellTrainState();
+            d.removeBadSessions(fullSession, minLick);
+
         }
     }
 
-    public int[][] getPerf(int lightOn, int trialLimit) {
+    public int[][] getPerf(int lightOn, int trialLimit, boolean onlyWellTrained) {
         ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
-            if (d.sessions == null || d.sessions.size() < 5) {
+            if (d.sessions == null || d.sessions.size() < 5 || (onlyWellTrained && !d.isWellTrained())) {
                 continue;
             }
+
             int trialCount = 0;
             day:
             for (Session s : d.sessions) {
@@ -66,12 +70,13 @@ public class DataProcessor {
                 int correctRejection = 0;
                 int rewardedLick = 0;
                 int unrewardedLick = 0;
+                int abortTrial = 0;
 
                 for (Trial t : s.trials) {
 
                     if (trialLimit > 0 && trialCount >= trialLimit) {
                         if (totalTrial > 0) {
-                            sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick});
+                            sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick, abortTrial});
                         }
                         break day;
                     }
@@ -102,11 +107,14 @@ public class DataProcessor {
                                 correctRejection++;
                                 unrewardedLick += t.getResponseLick();
                                 break;
+                            case ABORT_TRIAL:
+                                abortTrial++;
+                                break;
                         }
                     }
                 }
                 if (totalTrial > 0) {
-                    sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick});
+                    sessions.add(new int[]{hit, miss, fa, correctRejection, totalTrial, rewardedLick, unrewardedLick, abortTrial});
                 }
             }
         }
@@ -114,10 +122,20 @@ public class DataProcessor {
         return sessions.toArray(new int[sessions.size()][]);
     }
 
-    public int[][] getCatchPerf(int catchTrial, int trialLimit) {
+    public int getDaysWellTrained(){
+        int i=0;
+        for(Day d:days){
+            if(d.isWellTrained()){
+                i++;
+            }
+        }
+        return i;
+    }
+    
+    public int[][] getCatchPerf(int catchTrial, int trialLimit, boolean onlyWellTrained) {
         ArrayList<int[]> sessions = new ArrayList<>();
         for (Day d : days) {
-            if (d.sessions.size() < 5) {
+            if (d.sessions.size() < 5 || (onlyWellTrained && !d.isWellTrained())) {
                 continue;
             }
             int trialCount = 0;
@@ -168,7 +186,6 @@ public class DataProcessor {
     }
 
     public Queue<Day> getDays() {
-        System.out.println(days.size() + " days");
         return days;
     }
 

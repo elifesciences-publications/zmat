@@ -37,7 +37,8 @@ public class FileParser {
         int trialStart = 0;
         int delayLength = 0;
         ArrayList<Integer[]> licks = new ArrayList<>();
-        EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection, EventType.Miss, EventType.Hit};
+        EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection,
+            EventType.Miss, EventType.Hit, EventType.ABORT_TRIAL};
         EventType[] odors = {EventType.OdorA, EventType.OdorB};
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
             @SuppressWarnings("unchecked")
@@ -49,22 +50,32 @@ public class FileParser {
             boolean laserOn = false;
             EventType response;
             int lastLick = 0;
+            int type = 0;
+            int val = 0;
             for (int[] evt : eventList) {
-                switch (evt[2]) {
+                if (evt.length == 5) {
+                    type = evt[2];
+                    val = evt[3];
+                } else if (evt.length == 3) {
+                    type = evt[1];
+                    val = evt[2] & 0x7f;
+                }
+
+                switch (type) {
                     case 0:
                         if (evt[0] - lastLick > 50) {
-                            licks.add(new Integer[]{evt[0], evt[3]});
+                            licks.add(new Integer[]{evt[0], evt[2]});
                             lastLick = evt[0];
                         }
                         break;
                     case 1:
-                        if (evt[3] == 1) {
+                        if (val == 1) {
                             break;
                         }
-                        evt[2]=61;
-                        evt[3]=0;
+                        type = 61;
+                        val = 0;
                     case 61:
-                        switch (evt[3]) {
+                        switch (val) {
                             case 0:
                                 if (currentTrials.size() > 0) {
                                     sessions.offer(new Session(currentTrials));
@@ -77,7 +88,9 @@ public class FileParser {
                     case 5:
                     case 6:
                     case 7:
-                        response = responses[evt[2] - 4];
+                    case 84:
+                        int respPos = type > 7 ? 4 : type - 4;
+                        response = responses[respPos];
                         if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
                             currentTrials.offer(new Trial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start));
                         }
@@ -88,20 +101,20 @@ public class FileParser {
                         break;
                     case 9:
                     case 10:
-                        if (evt[3] != 0) {
+                        if (val != 0) {
                             if (firstOdor == EventType.unknown) {
-                                firstOdor = odors[evt[2] - 9];
+                                firstOdor = odors[type - 9];
 //                                licks = new ArrayList<>();
                                 trialStart = evt[0];
                             } else {
-                                secondOdor = odors[evt[2] - 9];
+                                secondOdor = odors[type - 9];
                                 odor2Start = evt[0];
                                 delayLength = evt[0] - trialStart - 1000;
                             }
                         }
                         break;
                     case 65:
-                        laserOn = (evt[3] == 1);
+                        laserOn = (val == 1);
                         break;
                     case 58:
                     case 59:

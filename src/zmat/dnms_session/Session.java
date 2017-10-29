@@ -15,6 +15,7 @@ public class Session {
     protected Queue<Trial> trials;
 
     public Session(Queue<Trial> q) {
+//        System.out.println("New session");
         trials = new LinkedList<>();
         trials.addAll(q);
     }

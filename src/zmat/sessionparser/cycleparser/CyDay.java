@@ -22,7 +22,7 @@ public class CyDay extends zmat.dnms_session.Day {
     }
 
     private void combineSessions() {
-        removeBadSessions(12, true, 3);
+        removeBadSessions(12, 3);
         LinkedList<Trial> q = new LinkedList<>();
         for (Session s : sessions) {
             for (Trial t : s.getTrails()) {
