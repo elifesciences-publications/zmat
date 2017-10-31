@@ -120,4 +120,10 @@ public class Trial {
         return odor2Start;
     }
 
+    public int[] getFactors() {
+        return new int[]{this.firstOdor.ordinal(),
+            this.secondOdor.ordinal(),
+            this.laserON ? 1 : 0,
+            this.response.ordinal()};
+    }
 }

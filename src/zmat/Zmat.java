@@ -150,10 +150,7 @@ public class Zmat {
         for (Day day : dp.getDays()) {
             for (Session sess : day.getSessions()) {
                 for (Trial t : sess.getTrails()) {
-                    rtn.add(new int[]{t.getFirstOdor().ordinal(),
-                        t.getSecondOdor().ordinal(),
-                        t.withLaserON() ? 1 : 0,
-                        t.getResponse().ordinal()});
+                    rtn.add(t.getFactors());
                 }
             }
         }

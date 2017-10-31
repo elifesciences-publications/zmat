@@ -6,6 +6,7 @@
             <file>file:/I:/java/zmat/src/zmat/sessionparser/cycleparser/CyDay.java</file>
             <file>file:/I:/java/zmat/src/zmat/sessionparser/dualtaskparser/DualTrial.java</file>
             <file>file:/I:/java/zmat/src/zmat/dnms_session/EventType.java</file>
+            <file>file:/I:/java/zmat/src/zmat/sessionparser/seq2afcparser/Seq2AFCFileParser.java</file>
             <file>file:/I:/java/zmat/src/zmat/ZmatGNG.java</file>
             <file>file:/I:/java/zmat/src/zmat/ZmatDual.java</file>
             <file>file:/I:/java/zmat/src/zmat/Zmat.java</file>
@@ -13,6 +14,7 @@
             <file>file:/I:/java/zmat/src/zmat/dnms_session/Day.java</file>
             <file>file:/I:/java/zmat/src/zmat/dnms_session/DataProcessor.java</file>
             <file>file:/I:/java/zmat/src/zmat/dnms_session/EventNames.java</file>
+            <file>file:/I:/java/zmat/src/zmat/sessionparser/seq2afcparser/Seq2AFCTrial.java</file>
             <file>file:/I:/java/zmat/src/zmat/dnms_session/FileParser.java</file>
             <file>file:/I:/java/zmat/src/zmat/dnms_session/Session.java</file>
             <file>file:/I:/java/zmat/src/zmat/sessionparser/dualtaskparser/DualParser.java</file>
