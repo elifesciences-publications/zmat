@@ -5,9 +5,12 @@
  */
 package zmat;
 
+import java.util.ArrayList;
 import zmat.dnms_session.DataProcessor;
 import zmat.dnms_session.Day;
 import zmat.dnms_session.FileParser;
+import zmat.dnms_session.Session;
+import zmat.dnms_session.Trial;
 
 /**
  *
@@ -17,7 +20,7 @@ public class ZmatSeq2AFC extends Zmat {
 
     @Override
     public void processFile(String... s) {
-        dp = new DataProcessor(){
+        dp = new DataProcessor() {
             @Override
             public void processFile(String... s) {
                 FileParser fp = new zmat.sessionparser.seq2afcparser.Seq2AFCFileParser();
@@ -38,4 +41,15 @@ public class ZmatSeq2AFC extends Zmat {
         days = dp.getDays();
     }
 
+    public int[][] getTrialLick() {
+        ArrayList<int[]> rtn = new ArrayList<>();
+        for (Day day : dp.getDays()) {
+            for (Session sess : day.getSessions()) {
+                for (Trial t : sess.getTrails()) {
+                    rtn.add(t.getAllLick());
+                }
+            }
+        }
+        return rtn.toArray(new int[rtn.size()][]);
+    }
 }

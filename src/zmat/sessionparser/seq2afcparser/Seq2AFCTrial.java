@@ -45,8 +45,11 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
     @Override
     public int[] getFactors() {
         return new int[]{this.firstOdor.ordinal(),
+            this.getOdor2Start(),
             this.test1.ordinal(),
+            this.test1Start,
             this.test2.ordinal(),
+            this.test2Start,
             this.response.ordinal(),
             this.response2.ordinal()
         };

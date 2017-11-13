@@ -34,7 +34,7 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 1.69a");
+        System.out.println("zmat ver 17.11.12a");
     }
 
     public void setMinLick(int minLick) {

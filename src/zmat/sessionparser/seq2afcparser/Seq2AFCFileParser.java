@@ -25,8 +25,8 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
     @Override
     protected Queue<Session> processFile(File f) {
         int sampleStart = 0;
-        int test1Start=0;
-        int test2Start=0;
+        int test1Start = 0;
+        int test2Start = 0;
         ArrayList<Integer[]> licks = new ArrayList<>();
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection,
             EventType.Miss, EventType.Hit, EventType.ABORT_TRIAL};
@@ -82,6 +82,7 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                     case 10:
                         if (val != 0) {
                             sample = odors[type - 9];
+                            sampleStart = evt[0];
                         }
                         break;
                     case 65:
@@ -90,26 +91,29 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                     case 58:
                     case 59:
                         if (sample != EventType.unknown && test1 != EventType.unknown) {
-                            currentTrials.offer(new Seq2AFCTrial(sample, test1, test2, response1, response2, laserOn, licks, sampleStart,test1Start,test2Start));
+                            currentTrials.offer(new Seq2AFCTrial(sample, test1, test2, response1, response2, laserOn, licks, sampleStart, test1Start, test2Start));
                         }
                         sample = EventType.unknown;
-                        test1=EventType.unknown;
-                        test2=EventType.unknown;
-                        response1=EventType.unknown;
-                        response2=EventType.unknown;
+                        test1 = EventType.unknown;
+                        test2 = EventType.unknown;
+                        response1 = EventType.unknown;
+                        response2 = EventType.unknown;
                         laserOn = false;
                         licks = new ArrayList<>();
                         break;
                     case 83:
+                        if (val == 0) {
+                            continue;
+                        }
                         EventType e = (val == 6)
                                 ? EventType.OdorA
                                 : EventType.OdorB;
                         if (test1 == EventType.unknown) {
                             test1 = e;
-                            test1Start=evt[0];
+                            test1Start = evt[0];
                         } else {
                             test2 = e;
-                            test2Start=evt[0];
+                            test2Start = evt[0];
                         }
                         break;
                 }

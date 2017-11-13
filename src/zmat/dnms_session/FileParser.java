@@ -52,6 +52,8 @@ public class FileParser {
             int lastLick = 0;
             int type = 0;
             int val = 0;
+            int samplePort=0;
+            int testPort=0;
             for (int[] evt : eventList) {
                 if (evt.length == 5) {
                     type = evt[2];
@@ -92,7 +94,10 @@ public class FileParser {
                         int respPos = type > 7 ? 4 : type - 4;
                         response = responses[respPos];
                         if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
-                            currentTrials.offer(new Trial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start));
+                            Trial newTrial=new Trial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start);
+                            newTrial.setSamplePort(samplePort);
+                            newTrial.setTestPort(testPort);
+                            currentTrials.offer(newTrial);
                         }
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
@@ -106,10 +111,12 @@ public class FileParser {
                                 firstOdor = odors[type - 9];
 //                                licks = new ArrayList<>();
                                 trialStart = evt[0];
+                                samplePort=val;
                             } else {
                                 secondOdor = odors[type - 9];
                                 odor2Start = evt[0];
                                 delayLength = evt[0] - trialStart - 1000;
+                                testPort=val;
                             }
                         }
                         break;

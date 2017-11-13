@@ -16,9 +16,11 @@ public class Trial {
     final protected EventType secondOdor;
     final protected EventType response;
     final protected boolean laserON;
-    ArrayList<Integer[]> licks;
-    int delayLength;
-    int odor2Start;
+    private ArrayList<Integer[]> licks;
+    private int delayLength;
+    private int odor2Start;
+    private int samplePort;
+    private int testPort;
 
     public Trial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int odor2Start) {
         this(firstOdor, secondOdor, response, laserON);
@@ -33,6 +35,16 @@ public class Trial {
         this.response = response;
         this.laserON = laserON;
     }
+
+    public void setSamplePort(int sample) {
+        this.samplePort = sample;
+    }
+
+    public void setTestPort(int test) {
+        this.testPort = test;
+    }
+    
+    
 
     public boolean isGoodChoice() {
         return response == EventType.Hit || response == EventType.CorrectRejection;
@@ -121,8 +133,8 @@ public class Trial {
     }
 
     public int[] getFactors() {
-        return new int[]{this.firstOdor.ordinal(),
-            this.secondOdor.ordinal(),
+        return new int[]{this.samplePort,
+            this.testPort,
             this.laserON ? 1 : 0,
             this.response.ordinal()};
     }
