@@ -19,8 +19,10 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
     final private EventType test2;
     final private int test1Start;
     final private int test2Start;
+    final private int sampleValue;
 
     public Seq2AFCTrial(EventType sample,
+            int sampleValue,
             EventType test1,
             EventType test2,
             EventType response1,
@@ -36,22 +38,25 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
         this.response2 = response2;
         this.test1Start = test1Start;
         this.test2Start = test2Start;
+        this.sampleValue = sampleValue;
     }
 
     public int getTest1() {
         return test1.ordinal();
     }
-    
+
     @Override
     public int[] getFactors() {
-        return new int[]{this.firstOdor.ordinal(),
+        return new int[]{
+            this.sampleValue,
             this.getOdor2Start(),
             this.test1.ordinal(),
             this.test1Start,
             this.test2.ordinal(),
             this.test2Start,
             this.response.ordinal(),
-            this.response2.ordinal()
+            this.response2.ordinal(),
+            this.laserON ? 1 : 0
         };
     }
 }

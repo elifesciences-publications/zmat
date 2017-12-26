@@ -37,6 +37,7 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
             Queue<Trial> currentTrials = new LinkedList<>();
             Queue<Session> sessions = new LinkedList<>();
             EventType sample = EventType.unknown;
+            int sampleValue = -1;
             EventType test1 = EventType.unknown;
             EventType test2 = EventType.unknown;
             boolean laserOn = false;
@@ -81,8 +82,15 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                     case 9:
                     case 10:
                         if (val != 0) {
-                            sample = odors[type - 9];
-                            sampleStart = evt[0];
+                            if (sample == EventType.unknown) {
+                                sample = odors[type - 9];
+//                                licks = new ArrayList<>();
+                                sampleValue = val;
+                                sampleStart = evt[0];
+                            } else {
+                                test1 = odors[type - 9];
+                                test1Start = evt[0];
+                            }
                         }
                         break;
                     case 65:
@@ -91,7 +99,7 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                     case 58:
                     case 59:
                         if (sample != EventType.unknown && test1 != EventType.unknown) {
-                            currentTrials.offer(new Seq2AFCTrial(sample, test1, test2, response1, response2, laserOn, licks, sampleStart, test1Start, test2Start));
+                            currentTrials.offer(new Seq2AFCTrial(sample, sampleValue, test1, test2, response1, response2, laserOn, licks, sampleStart, test1Start, test2Start));
                         }
                         sample = EventType.unknown;
                         test1 = EventType.unknown;
@@ -105,16 +113,12 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                         if (val == 0) {
                             continue;
                         }
-                        EventType e = (val == 6)
+                        EventType e = (test1 == EventType.OdorB)
                                 ? EventType.OdorA
                                 : EventType.OdorB;
-                        if (test1 == EventType.unknown) {
-                            test1 = e;
-                            test1Start = evt[0];
-                        } else {
-                            test2 = e;
-                            test2Start = evt[0];
-                        }
+
+                        test2 = e;
+                        test2Start = evt[0];
                         break;
                 }
             }
