@@ -21,6 +21,10 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
     final private int test2Start;
     final private int sampleValue;
 
+    final private EventType dualDRResponse;
+    final private int dualDRSample;
+    final private int dualDRTest;
+
     public Seq2AFCTrial(EventType sample,
             int sampleValue,
             EventType test1,
@@ -31,7 +35,11 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
             ArrayList<Integer[]> licks,
             int sampleStart,
             int test1Start,
-            int test2Start) {
+            int test2Start,
+            int dualSample,
+            int dualTest,
+            EventType dualResponse
+    ) {
         super(sample, EventType.unknown, response1, laserON, licks, 0, sampleStart);
         this.test1 = test1;
         this.test2 = test2;
@@ -39,6 +47,11 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
         this.test1Start = test1Start;
         this.test2Start = test2Start;
         this.sampleValue = sampleValue;
+
+        this.dualDRSample = dualSample;
+        this.dualDRTest = dualTest;
+        this.dualDRResponse = dualResponse;
+
     }
 
     public int getTest1() {
@@ -56,7 +69,11 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
             this.test2Start,
             this.response.ordinal(),
             this.response2.ordinal(),
-            this.laserON ? 1 : 0
+            this.laserON ? 1 : 0,
+            this.dualDRSample,
+            this.dualDRTest,
+            this.dualDRResponse.ordinal()
+
         };
     }
 }

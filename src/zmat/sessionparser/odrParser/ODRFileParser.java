@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package zmat.sessionparser.seq2afcparser;
+package zmat.sessionparser.odrParser;
 
+import zmat.sessionparser.seq2afcparser.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,13 +21,12 @@ import zmat.dnms_session.Trial;
  *
  * @author casel_000
  */
-public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
+public class ODRFileParser extends zmat.dnms_session.FileParser {
 
     @Override
     protected Queue<Session> processFile(File f) {
         int sampleStart = 0;
-        int test1Start = 0;
-        int test2Start = 0;
+        int respCueStart = 0;
         ArrayList<Integer[]> licks = new ArrayList<>();
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection,
             EventType.Miss, EventType.Hit, EventType.ABORT_TRIAL};
@@ -37,13 +37,11 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
             Queue<Trial> currentTrials = new LinkedList<>();
             Queue<Session> sessions = new LinkedList<>();
             EventType sample = EventType.unknown;
+            EventType responseCue = EventType.Others;
             int sampleValue = -1;
-            EventType test1 = EventType.unknown;
-            EventType test2 = EventType.unknown;
+            int respCueValue = -1;
             boolean laserOn = false;
-            EventType response1 = EventType.unknown;
-            EventType response2 = EventType.unknown;
-            EventType dualResponse = EventType.unknown;
+            EventType response = EventType.unknown;
             int dual_dr_sample = 0;
             int dual_dr_test = 0;
             int lastLick = 0;
@@ -76,74 +74,45 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                     case 7:
                     case 84:
                         int respPos = type > 7 ? 4 : type - 4;
-                        if (val == 3) {
-                            dualResponse = responses[respPos];
-                        } else if (response1 == EventType.unknown) {
-                            response1 = responses[respPos];
-                        } else {
-                            response2 = responses[respPos];
-                        }
+                        response = responses[respPos];
                         break;
                     case 9:
                     case 10:
                         if (val != 0) {
-                            if (sample == EventType.unknown) {
-                                sample = odors[type - 9];
+                            sample = odors[type - 9];
 //                                licks = new ArrayList<>();
-                                sampleValue = val;
-                                sampleStart = evt[0];
-                            } else {
-                                test1 = odors[type - 9];
-                                test1Start = evt[0];
-                            }
+                            sampleValue = val;
+                            sampleStart = evt[0];
                         }
-                        break;
-                    case 11:
-                        dual_dr_sample = val;
-                        break;
-                    case 12:
-                        dual_dr_test = val;
                         break;
                     case 65:
                         laserOn = (val == 1);
                         break;
                     case 58:
                     case 59:
-                        if (sample != EventType.unknown && test1 != EventType.unknown) {
-                            currentTrials.offer(new Seq2AFCTrial(sample,
+                        if (sample != EventType.unknown && respCueValue >0) {
+                            currentTrials.offer(new ODRTrial(sample,
                                     sampleValue,
-                                    test1,
-                                    test2,
-                                    response1,
-                                    response2,
+                                    respCueValue,
+                                    response,
                                     laserOn,
                                     licks,
                                     sampleStart,
-                                    test1Start,
-                                    test2Start,
-                                    dual_dr_sample,
-                                    dual_dr_test,
-                                    dualResponse));
+                                    respCueStart
+                                    ));
                         }
                         sample = EventType.unknown;
-                        sampleValue = -1;
-                        test1 = EventType.unknown;
-                        test2 = EventType.unknown;
-                        response1 = EventType.unknown;
-                        response2 = EventType.unknown;
+                        response = EventType.unknown;
+                        sampleValue=-1;
+                        respCueValue=-1;
                         laserOn = false;
                         licks = new ArrayList<>();
                         break;
                     case 83:
-                        if (val == 0) {
-                            continue;
+                        if (val != 0) {
+                            respCueValue = val;
+                            respCueStart = evt[0];
                         }
-                        EventType e = (test1 == EventType.OdorB)
-                                ? EventType.OdorA
-                                : EventType.OdorB;
-
-                        test2 = e;
-                        test2Start = evt[0];
                         break;
                 }
             }
