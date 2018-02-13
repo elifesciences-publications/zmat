@@ -148,6 +148,9 @@ public class Zmat {
     public int[][] getFactorSeq() {
         ArrayList<int[]> rtn = new ArrayList<>();
         for (Day day : dp.getDays()) {
+            if (day.getSessions() == null || day.getSessions().size() < 5 || !day.isWellTrained()) {
+                continue;
+            }
             for (Session sess : day.getSessions()) {
                 for (Trial t : sess.getTrails()) {
                     rtn.add(t.getFactors());
@@ -165,6 +168,16 @@ public class Zmat {
         if (rootPath == null || rootPath.length == 0) {
             return null;
         }
+        boolean all = false;
+        for (String s : rootPath) {
+            if (s.trim().equalsIgnoreCase("all")) {
+                if (rootPath.length == 1) {
+                    return null;
+                }
+                all = true;
+            }
+        }
+
         ArrayList<String> fileList = new ArrayList<>();
         for (String onePath : rootPath) {
             File root = new File(onePath);
@@ -176,9 +189,15 @@ public class Zmat {
             if (list != null) {
                 for (File f : list) {
                     if (f.isDirectory()) {
-                        fileList.addAll(updateFilesList(new String[]{f.getAbsolutePath()}));
+                        fileList.addAll(updateFilesList(all
+                                ? new String[]{"all", f.getAbsolutePath()}
+                                : new String[]{f.getAbsolutePath()}
+                        ));
                     } else if (f.getName().endsWith(".ser") || f.getName().endsWith("Process.txt")) {
                         fileList.add(f.getPath());
+                    } else if (all) {
+                        fileList.add(f.getPath());
+
                     }
                 }
             }
@@ -188,7 +207,7 @@ public class Zmat {
         return fileList;
     }
 
-    ArrayList<String> listFilesList(String rootPath, String[] elements) {
+    ArrayList<String> listFilesList(boolean all, String rootPath, String[] elements) {
         ArrayList<String> fileList = new ArrayList<>();
         if (rootPath == null) {
             return null;
@@ -202,10 +221,10 @@ public class Zmat {
         if (list != null) {
             for (File f : list) {
                 if (f.isDirectory()) {
-                    fileList.addAll(listFilesList(f.getAbsolutePath(), elements));
+                    fileList.addAll(listFilesList(all, f.getAbsolutePath(), elements));
                 } else {
                     String fileName = f.getName();
-                    boolean add = fileName.endsWith(".ser") || fileName.endsWith("Process.txt");
+                    boolean add = all || fileName.endsWith(".ser") || fileName.endsWith("Process.txt");
 
                     if (elements.length > 0) {
                         for (String element : elements) {
@@ -230,7 +249,7 @@ public class Zmat {
         if (rootPath.length() < 1) {
             rootPath = "I:\\Behavior\\2014\\";
         }
-        ArrayList<String> fileList = listFilesList(rootPath, elements);
+        ArrayList<String> fileList = listFilesList(false, rootPath, elements);
         return fileList.toArray(new String[fileList.size()]);
     }
 

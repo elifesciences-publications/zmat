@@ -3,17 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/I:/java/zmat/src/zmat/sessionparser/seq2afcparser/Seq2AFCTrial.java</file>
-            <file>file:/I:/java/zmat/src/zmat/ZmatSeq2AFC.java</file>
-            <file>file:/I:/java/zmat/src/zmat/ZPID.java</file>
-            <file>file:/I:/java/zmat/src/zmat/dnms_session/FileParser.java</file>
-            <file>file:/I:/java/zmat/src/zmat/sessionparser/odrParser/ODRFileParser.java</file>
-            <file>file:/I:/java/zmat/src/zmat/sessionparser/seq2afcparser/Seq2AFCFileParser.java</file>
-            <file>file:/I:/java/zmat/src/zmat/dnms_session/EventType.java</file>
-            <file>file:/I:/java/zmat/src/zmat/sessionparser/emlparser/emlparser/FileParser.java</file>
             <file>file:/I:/java/zmat/src/zmat/Zmat.java</file>
-            <file>file:/I:/java/zmat/src/zmat/ZmatODR.java</file>
-            <file>file:/I:/java/zmat/src/zmat/dnms_session/EventNames.java</file>
         </group>
     </open-files>
 </project-private>

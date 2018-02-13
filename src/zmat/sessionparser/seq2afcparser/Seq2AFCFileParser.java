@@ -47,6 +47,7 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
             int dual_dr_sample = 0;
             int dual_dr_test = 0;
             int lastLick = 0;
+            int laserTypeValue=0;
             int type = 0;
             int val = 0;
             for (int[] evt : eventList) {
@@ -105,9 +106,12 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                         dual_dr_test = val;
                         break;
                     case 65:
+                        
                         laserOn = (val == 1);
                         break;
                     case 58:
+                        laserTypeValue=val;
+                        break;
                     case 59:
                         if (sample != EventType.unknown && test1 != EventType.unknown) {
                             currentTrials.offer(new Seq2AFCTrial(sample,
@@ -117,6 +121,7 @@ public class Seq2AFCFileParser extends zmat.dnms_session.FileParser {
                                     response1,
                                     response2,
                                     laserOn,
+                                    laserTypeValue,
                                     licks,
                                     sampleStart,
                                     test1Start,

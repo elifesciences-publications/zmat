@@ -43,8 +43,6 @@ public class Trial {
     public void setTestPort(int test) {
         this.testPort = test;
     }
-    
-    
 
     public boolean isGoodChoice() {
         return response == EventType.Hit || response == EventType.CorrectRejection;
@@ -133,9 +131,18 @@ public class Trial {
     }
 
     public int[] getFactors() {
-        return new int[]{this.samplePort,
-            this.testPort,
-            this.laserON ? 1 : 0,
-            this.response.ordinal()};
+        if ((this.samplePort == 0 && this.testPort == 0)
+                || (this.samplePort == 1 && this.testPort == 1)) {
+            return new int[]{
+                this.firstOdor == EventType.OdorA ? 5 : 6,
+                this.secondOdor == EventType.OdorB ? 5 : 6,
+                this.laserON ? 1 : 0, this.response.ordinal()
+            };
+        } else {
+            return new int[]{this.samplePort,
+                this.testPort,
+                this.laserON ? 1 : 0,
+                this.response.ordinal()};
+        }
     }
 }

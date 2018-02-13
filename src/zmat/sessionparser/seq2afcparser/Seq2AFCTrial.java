@@ -20,6 +20,7 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
     final private int test1Start;
     final private int test2Start;
     final private int sampleValue;
+    final private int laserTypeValue;
 
     final private EventType dualDRResponse;
     final private int dualDRSample;
@@ -32,6 +33,7 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
             EventType response1,
             EventType response2,
             boolean laserON,
+            int laserTypeValue,
             ArrayList<Integer[]> licks,
             int sampleStart,
             int test1Start,
@@ -47,7 +49,7 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
         this.test1Start = test1Start;
         this.test2Start = test2Start;
         this.sampleValue = sampleValue;
-
+        this.laserTypeValue=laserTypeValue;
         this.dualDRSample = dualSample;
         this.dualDRTest = dualTest;
         this.dualDRResponse = dualResponse;
@@ -61,18 +63,19 @@ public class Seq2AFCTrial extends zmat.dnms_session.Trial {
     @Override
     public int[] getFactors() {
         return new int[]{
-            this.sampleValue,
-            this.getOdor2Start(),
-            this.test1.ordinal(),
-            this.test1Start,
-            this.test2.ordinal(),
-            this.test2Start,
-            this.response.ordinal(),
-            this.response2.ordinal(),
-            this.laserON ? 1 : 0,
-            this.dualDRSample,
-            this.dualDRTest,
-            this.dualDRResponse.ordinal()
+            this.sampleValue, //mat 1
+            this.getOdor2Start(), //mat 2
+            this.test1.ordinal(), //mat 3
+            this.test1Start, //mat 4
+            this.test2.ordinal(), //mat 5
+            this.test2Start, //mat 6
+            this.response.ordinal(), //mat 7
+            this.response2.ordinal(), //mat 8
+            this.laserON ? 1 : 0, //mat 9
+            this.laserTypeValue, //mat 10
+            this.dualDRSample, //mat 11
+            this.dualDRTest, //mat 12
+            this.dualDRResponse.ordinal() //mat 13
 
         };
     }
