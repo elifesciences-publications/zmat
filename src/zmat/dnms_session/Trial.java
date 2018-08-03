@@ -135,14 +135,16 @@ public class Trial {
                 || (this.samplePort == 1 && this.testPort == 1)) {
             return new int[]{
                 this.firstOdor == EventType.OdorA ? 5 : 6,
-                this.secondOdor == EventType.OdorB ? 5 : 6,
-                this.laserON ? 1 : 0, this.response.ordinal()
+                this.secondOdor == EventType.OdorA ? 5 : 6,
+                this.laserON ? 1 : 0, this.response.ordinal(),
+                this.getResponseLick()
             };
         } else {
             return new int[]{this.samplePort,
                 this.testPort,
                 this.laserON ? 1 : 0,
-                this.response.ordinal()};
+                this.response.ordinal(),
+                this.getResponseLick()};
         }
     }
 }

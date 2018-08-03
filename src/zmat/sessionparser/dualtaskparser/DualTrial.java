@@ -19,8 +19,8 @@ public class DualTrial extends zmat.dnms_session.Trial {
 
     public DualTrial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int odor2Start, EventType distractorOdor, EventType distractorResponse) {
         super(firstOdor, secondOdor, response, laserON, licks, delayLength, odor2Start);
-        this.distractorOdor=distractorOdor;
-        this.distractorResponse=distractorResponse;
+        this.distractorOdor = distractorOdor;
+        this.distractorResponse = distractorResponse;
     }
 
     public EventType getDistractorResponse() {
@@ -29,7 +29,7 @@ public class DualTrial extends zmat.dnms_session.Trial {
 
     @Override
     public EventType getResponse() {
-        if (firstOdor==EventType.Others || secondOdor==EventType.Others){
+        if (firstOdor == EventType.Others || secondOdor == EventType.Others) {
             return EventType.Others;
         }
         return response;
@@ -38,5 +38,19 @@ public class DualTrial extends zmat.dnms_session.Trial {
     public EventType getDistractorOdor() {
         return distractorOdor;
     }
-    
+
+    @Override
+    public int[] getFactors() {
+//        System.out.println("DBG DTR TYPE"+distractorOdor);
+        return new int[]{
+            this.firstOdor == EventType.OdorA ? 2 : 3,
+            this.secondOdor == EventType.OdorA ? 5 : 6,
+            this.laserON ? 1 : 0,
+            this.response.ordinal(),
+            this.distractorOdor.ordinal(),
+            this.distractorResponse.ordinal(),
+            this.getResponseLick()
+        };
+
+    }
 }

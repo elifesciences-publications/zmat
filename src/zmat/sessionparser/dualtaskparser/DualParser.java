@@ -43,6 +43,7 @@ public class DualParser extends zmat.dnms_session.FileParser {
             int lastLick = 0;
             int type = 0;
             int val = 0;
+            boolean distrSet = false;
             for (int[] evt : eventList) {
                 if (evt.length == 5) {
                     type = evt[2];
@@ -83,7 +84,7 @@ public class DualParser extends zmat.dnms_session.FileParser {
 //                            System.out.println(""+evt[2]+", "+evt[3]);
                         if (val == 2 || val == 1) {
 
-                            response = (type==84)?EventType.ABORT_TRIAL:responses[type - 4];
+                            response = (type == 84) ? EventType.ABORT_TRIAL : responses[type - 4];
                             if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
                                 currentTrials.offer(new DualTrial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start, distractorOdor, distractorResponse));
                             }
@@ -91,10 +92,11 @@ public class DualParser extends zmat.dnms_session.FileParser {
                             secondOdor = EventType.unknown;
                             distractorOdor = EventType.unknown;
                             distractorResponse = EventType.unknown;
+                            distrSet = false;
 //                        licks = new ArrayList<>();
                             laserOn = false;
                         } else if (val == 3) {
-                            distractorResponse = (type==84)?EventType.ABORT_TRIAL:responses[type - 4];
+                            distractorResponse = (type == 84) ? EventType.ABORT_TRIAL : responses[type - 4];
 //                            System.out.println(""+evt[2]+", "+evt[3]);//TODO: DEBUG
                         }
                         break;
@@ -115,7 +117,14 @@ public class DualParser extends zmat.dnms_session.FileParser {
                         break;
                     case 64:
                     case 66:
-                        distractorOdor = (type == 66) ? EventType.OdorA : EventType.OdorB;
+                        if (!distrSet) {
+                            if (val != 0) {
+                                distractorOdor = (type == 66) ? EventType.OdorA : EventType.OdorB;
+                            } else {
+//                                System.out.println("DBG NONE");
+                            }
+                        }
+                        distrSet=true;
                         break;
                     case 65:
                         laserOn = (val == 1);
@@ -124,7 +133,10 @@ public class DualParser extends zmat.dnms_session.FileParser {
                     case 59:
                         licks = new ArrayList<>();
                         break;
-                       
+                    case 51:
+//                        System.out.println("DBG TASKTYPE " + val);
+                        break;
+
                 }
             }
             if (currentTrials.size() > 0) {

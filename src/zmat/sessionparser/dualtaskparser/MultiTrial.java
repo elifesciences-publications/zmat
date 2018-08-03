@@ -19,8 +19,8 @@ public class MultiTrial extends zmat.dnms_session.Trial {
 
     public MultiTrial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int odor2Start, ArrayList<EventType> distractorOdor, ArrayList<EventType> distractorResponse) {
         super(firstOdor, secondOdor, response, laserON, licks, delayLength, odor2Start);
-        this.distractorOdor=distractorOdor;
-        this.distractorResponse=distractorResponse;
+        this.distractorOdor = distractorOdor;
+        this.distractorResponse = distractorResponse;
     }
 
     public ArrayList<EventType> getDistractorResponse() {
@@ -29,13 +29,11 @@ public class MultiTrial extends zmat.dnms_session.Trial {
 
     @Override
     public EventType getResponse() {
-        if (firstOdor==EventType.Others || secondOdor==EventType.Others){
+        if (firstOdor == EventType.Others || secondOdor == EventType.Others) {
             return EventType.Others;
         }
         return response;
     }
-    
-    
-    
-    
+
+
 }

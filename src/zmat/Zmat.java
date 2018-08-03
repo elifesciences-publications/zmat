@@ -34,7 +34,7 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 17.11.28");
+        System.out.println("zmat ver 18.08.01");
     }
 
     public void setMinLick(int minLick) {
@@ -145,19 +145,24 @@ public class Zmat {
         return dp.getPerf(lightOn, trialLimit, onlyWellTrained);
     }
 
-    public int[][] getFactorSeq() {
+    public int[][] getFactorSeq(boolean wellTrainedOnly) {
         ArrayList<int[]> rtn = new ArrayList<>();
         for (Day day : dp.getDays()) {
-            if (day.getSessions() == null || day.getSessions().size() < 5 || !day.isWellTrained()) {
+            if (day.getSessions() == null || day.getSessions().size() < 5 || (wellTrainedOnly && !day.isWellTrained())) {
                 continue;
             }
             for (Session sess : day.getSessions()) {
                 for (Trial t : sess.getTrails()) {
+//                    if (t instanceof zmat.sessionparser.dualtaskparser.DualTrial)
                     rtn.add(t.getFactors());
                 }
             }
         }
         return rtn.toArray(new int[rtn.size()][]);
+    }
+    
+    public int[][] getFactorSeq() {
+        return this.getFactorSeq(true);
     }
 
     public int getDaysWellTrained() {
