@@ -6,6 +6,7 @@
 package zmat;
 
 import zmat.dnms_session.DataProcessor;
+import zmat.dnms_session.Day;
 import zmat.dnms_session.FileParser;
 
 /**
@@ -22,14 +23,35 @@ public class ZmatQtr extends Zmat {
                 FileParser fp = new zmat.sessionparser.quarterparser.FileParser();
                 fp.parseFiles(s);
                 days = fp.getDays();
-                if (days.size() < 1) {
+                if (days.isEmpty()) {
                     System.out.println("No suitable records found.");
                 }
+//                for (Day d : days) {
+//                    d.testForWellTrainState();
+//                    d.removeBadSessions(fullSession, minLick);
+//
+//                }
             }
         };
-        dp.setMinLick(this.minLick);
-        dp.setFullSession(fullSession);
         dp.processFile(s);
     }
 
+//            days = new LinkedList<>();
+//        for (String f : s) {
+//            FileParser fp = f.endsWith(".ser")
+//                    ? new FileParser()
+//                    : new zmat.txtFile.TxtFileParser();
+//            fp.parseFiles(f);
+//
+//            days.addAll(fp.getDays());
+//        }
+//        if (days.isEmpty()) {
+//            System.out.println("No suitable records found.");
+//        }
+//
+//        for (Day d : days) {
+//            d.testForWellTrainState();
+//            d.removeBadSessions(fullSession, minLick);
+//
+//        }
 }

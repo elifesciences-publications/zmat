@@ -158,11 +158,11 @@ public class ZmatDual extends Zmat {
 
                     if (t.getAllLick().length == 0) {
 //                        allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3, t.withLaserON() ? 1 : 0, t.getDistractorResponse().ordinal() - 3});
-                        allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3, t.getDistractorOdor().ordinal()});
+                        allTrials.add(new int[]{currentCount, 65535, t.getResponse().ordinal() - 3, t.withLaserON() ? 1 : 0, t.getDistractorOdor().ordinal()});
                     } else {
                         for (int i : t.getAllLick()) {
 //                            allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3, t.withLaserON() ? 1 : 0, t.getDistractorResponse().ordinal() - 3});
-                            allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3, t.getDistractorOdor().ordinal()});
+                            allTrials.add(new int[]{currentCount, i, t.getResponse().ordinal() - 3, t.withLaserON() ? 1 : 0, t.getDistractorOdor().ordinal()});
                         }
                     }
                     trialCount++;

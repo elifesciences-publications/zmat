@@ -75,6 +75,9 @@ public class Day {
         outer:
         for (Session s : this.sessions) {
             for (Trial t : s.trials) {
+//                if (t.withLaserON()) {
+//                    continue;
+//                }
                 consecutive.add(t);
                 if (consecutive.size() >= 40) {
                     int sumCorrect = 0;
