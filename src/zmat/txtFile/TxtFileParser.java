@@ -56,7 +56,7 @@ public class TxtFileParser extends zmat.dnms_session.FileParser {
             Queue<Trial> laserTrials = new LinkedList<>();
             int idx = 0;
             for (Trial t : trials) {
-                laserTrials.add(new Trial(t.getFirstOdor(), t.getSecondOdor(), t.getResponse(), idx % 2 == 1, t.getLickQueue(), t.getDelayLength(), t.getOdor2Start()));
+                laserTrials.add(new Trial(t.getFirstOdor(), t.getSecondOdor(), t.getResponse(), idx % 2 == 1, t.getLickQueue(), t.getDelayLength(), t.getTestOnset()));
                 idx++;
             }
             sessions.offer(new Session(laserTrials));

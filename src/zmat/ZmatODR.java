@@ -41,15 +41,15 @@ public class ZmatODR extends Zmat {
         days = dp.getDays();
     }
 
-    public int[][] getTrialLick() {
-        ArrayList<int[]> rtn = new ArrayList<>();
+    public int[][][] getTrialLick() {
+        ArrayList<int[][]> rtn = new ArrayList<>();
         for (Day day : dp.getDays()) {
             for (Session sess : day.getSessions()) {
                 for (Trial t : sess.getTrails()) {
-                    rtn.add(t.getAllLick());
+                    rtn.add(((zmat.sessionparser.odrParser.ODRTrial)t).get2AFCLick());
                 }
             }
         }
-        return rtn.toArray(new int[rtn.size()][]);
+        return rtn.toArray(new int[rtn.size()][][]);
     }
 }

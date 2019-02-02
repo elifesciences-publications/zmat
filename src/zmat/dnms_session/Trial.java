@@ -16,17 +16,17 @@ public class Trial {
     final protected EventType secondOdor;
     final protected EventType response;
     final protected boolean laserON;
-    private ArrayList<Integer[]> licks;
+    protected ArrayList<Integer[]> licks;
     private int delayLength;
-    private int odor2Start;
+    private int testOnsetTS;
     private int samplePort;
     private int testPort;
 
-    public Trial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int odor2Start) {
+    public Trial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int testOnsetTS) {
         this(firstOdor, secondOdor, response, laserON);
         this.licks = licks;
         this.delayLength = delayLength;
-        this.odor2Start = odor2Start;
+        this.testOnsetTS = testOnsetTS;
     }
 
     public Trial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON) {
@@ -86,9 +86,9 @@ public class Trial {
         }
         int count = 0;
         for (Integer[] l : licks) {
-            if (l[0] > odor2Start - delayLength) {
+            if (l[0] > testOnsetTS - delayLength) {
                 count++;
-            } else if (l[0] > odor2Start) {
+            } else if (l[0] > testOnsetTS) {
                 break;
             }
         }
@@ -101,9 +101,9 @@ public class Trial {
         }
         int count = 0;
         for (Integer[] l : licks) {
-            if (l[0] > odor2Start + 2500) {
+            if (l[0] > testOnsetTS + 2500) {
                 break;
-            } else if (l[0] > odor2Start) {
+            } else if (l[0] > testOnsetTS) {
                 count++;
             }
         }
@@ -113,7 +113,7 @@ public class Trial {
     public int[] getAllLick() {
         int[] all = new int[licks.size()];
         for (int i = 0; i < licks.size(); i++) {
-            all[i] = licks.get(i)[0] - odor2Start;
+            all[i] = licks.get(i)[0] - testOnsetTS;
         }
         return all;
     }
@@ -126,8 +126,8 @@ public class Trial {
         return delayLength;
     }
 
-    public int getOdor2Start() {
-        return odor2Start;
+    public int getTestOnset() {
+        return testOnsetTS;
     }
 
     public int[] getFactors() {
@@ -140,11 +140,14 @@ public class Trial {
                 this.getResponseLick()
             };
         } else {
-            return new int[]{this.samplePort,
+            return new int[]{
+                this.samplePort,
                 this.testPort,
                 this.laserON ? 1 : 0,
                 this.response.ordinal(),
-                this.getResponseLick()};
+                this.getResponseLick(),
+                this.testOnsetTS};
+
         }
     }
 }

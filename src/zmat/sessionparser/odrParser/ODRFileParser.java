@@ -5,7 +5,6 @@
  */
 package zmat.sessionparser.odrParser;
 
-import zmat.sessionparser.seq2afcparser.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,8 +24,8 @@ public class ODRFileParser extends zmat.dnms_session.FileParser {
 
     @Override
     protected Queue<Session> processFile(File f) {
-        int sampleStart = 0;
-        int respCueStart = 0;
+        int sampleOnset = 0;
+        int respCueOnset = 0;
         ArrayList<Integer[]> licks = new ArrayList<>();
         EventType[] responses = {EventType.FalseAlarm, EventType.CorrectRejection,
             EventType.Miss, EventType.Hit, EventType.ABORT_TRIAL};
@@ -37,13 +36,10 @@ public class ODRFileParser extends zmat.dnms_session.FileParser {
             Queue<Trial> currentTrials = new LinkedList<>();
             Queue<Session> sessions = new LinkedList<>();
             EventType sample = EventType.unknown;
-            EventType responseCue = EventType.Others;
             int sampleValue = -1;
             int respCueValue = -1;
             boolean laserOn = false;
             EventType response = EventType.unknown;
-            int dual_dr_sample = 0;
-            int dual_dr_test = 0;
             int lastLick = 0;
             int type = 0;
             int val = 0;
@@ -82,7 +78,7 @@ public class ODRFileParser extends zmat.dnms_session.FileParser {
                             sample = odors[type - 9];
 //                                licks = new ArrayList<>();
                             sampleValue = val;
-                            sampleStart = evt[0];
+                            sampleOnset = evt[0];
                         }
                         break;
                     case 65:
@@ -90,15 +86,15 @@ public class ODRFileParser extends zmat.dnms_session.FileParser {
                         break;
                     case 58:
                     case 59:
-                        if (sample != EventType.unknown && respCueValue >0) {
+                        if (sample != EventType.unknown) {
                             currentTrials.offer(new ODRTrial(sample,
                                     sampleValue,
                                     respCueValue,
                                     response,
                                     laserOn,
                                     licks,
-                                    sampleStart,
-                                    respCueStart
+                                    sampleOnset,
+                                    respCueOnset
                                     ));
                         }
                         sample = EventType.unknown;
@@ -111,7 +107,7 @@ public class ODRFileParser extends zmat.dnms_session.FileParser {
                     case 83:
                         if (val != 0) {
                             respCueValue = val;
-                            respCueStart = evt[0];
+                            respCueOnset = evt[0];
                         }
                         break;
                 }

@@ -34,7 +34,7 @@ public class Zmat {
     }
 
     public Zmat() {
-        System.out.println("zmat ver 18.08.01");
+        System.out.println("zmat ver 19.01.27");
     }
 
     public void setMinLick(int minLick) {
@@ -158,9 +158,10 @@ public class Zmat {
                 }
             }
         }
+        System.out.println("SamplePort,TestPort,Laser,3/4/5/6->Hit/Miss/False/CR,ResponseLick#,CueOnsetTS");
         return rtn.toArray(new int[rtn.size()][]);
     }
-    
+
     public int[][] getFactorSeq() {
         return this.getFactorSeq(true);
     }

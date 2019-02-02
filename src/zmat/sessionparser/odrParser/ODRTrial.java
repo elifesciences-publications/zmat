@@ -14,10 +14,10 @@ import zmat.dnms_session.EventType;
  */
 public class ODRTrial extends zmat.dnms_session.Trial {
 
-    final private int respCueStart;
+    final private int respCueOnset;
+    final private int sampleOnset;
     final private int sampleValue;
     final private int respCueValue;
-
 
     public ODRTrial(EventType sample,
             int sampleValue,
@@ -25,15 +25,15 @@ public class ODRTrial extends zmat.dnms_session.Trial {
             EventType response,
             boolean laserON,
             ArrayList<Integer[]> licks,
-            int sampleStart,
-            int respCueStart
+            int sampleOnset,
+            int respCueOnset
     ) {
-        super(sample, EventType.unknown, response, laserON, licks, respCueStart-sampleStart,respCueStart);
-        this.respCueStart = respCueStart;
+        super(sample, EventType.unknown, response, laserON, licks, respCueOnset - sampleOnset, sampleOnset);
+        this.respCueOnset = respCueOnset;
         this.sampleValue = sampleValue;
-        this.respCueValue=respCueValue;
+        this.respCueValue = respCueValue;
+        this.sampleOnset = sampleOnset;
     }
-
 
     @Override
     public int[] getFactors() {
@@ -42,6 +42,16 @@ public class ODRTrial extends zmat.dnms_session.Trial {
             this.respCueValue,
             this.response.ordinal(),
             this.laserON ? 1 : 0,
+            this.sampleOnset
         };
+    }
+
+
+    public int[][] get2AFCLick() {
+        int[][] all = new int[licks.size()][2];
+        for (int i = 0; i < licks.size(); i++) {
+            all[i] = new int[]{licks.get(i)[0] - respCueOnset,licks.get(i)[1]};
+        }
+        return all;
     }
 }
