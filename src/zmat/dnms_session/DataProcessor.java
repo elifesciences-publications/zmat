@@ -47,7 +47,7 @@ public class DataProcessor {
         }
 
         for (Day d : days) {
-            d.testForWellTrainState();
+            d.testForWellTrainDay();
             d.removeBadSessions(fullSession, minLick);
 
         }

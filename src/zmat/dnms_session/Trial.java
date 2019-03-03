@@ -21,6 +21,9 @@ public class Trial {
     private int testOnsetTS;
     private int samplePort;
     private int testPort;
+    private int trialLaserType;
+    private int laserOnset;
+    private int laserOffset;
 
     public Trial(EventType firstOdor, EventType secondOdor, EventType response, boolean laserON, ArrayList<Integer[]> licks, int delayLength, int testOnsetTS) {
         this(firstOdor, secondOdor, response, laserON);
@@ -34,6 +37,18 @@ public class Trial {
         this.secondOdor = secondOdor;
         this.response = response;
         this.laserON = laserON;
+    }
+
+    public void setLaserOnset(int laserOnset) {
+        this.laserOnset = laserOnset;
+    }
+
+    public void setLaserOffset(int laserOffset) {
+        this.laserOffset = laserOffset;
+    }
+
+    public void setTrialLaserType(int trialLaserType) {
+        this.trialLaserType = trialLaserType;
     }
 
     public void setSamplePort(int sample) {
@@ -146,8 +161,21 @@ public class Trial {
                 this.laserON ? 1 : 0,
                 this.response.ordinal(),
                 this.getResponseLick(),
-                this.testOnsetTS};
+                this.testOnsetTS,
+                this.trialLaserType,
+                this.laserOnset,
+                this.laserOffset};
 
         }
+    }
+
+    public int[] getELFTrialFactors() {
+        return new int[]{
+            this.samplePort,
+            this.testPort,
+            this.laserON ? 1 : 0,
+            this.response.ordinal(),
+            this.getResponseLick(),
+            this.testOnsetTS};
     }
 }

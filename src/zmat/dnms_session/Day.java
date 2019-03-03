@@ -17,7 +17,7 @@ public class Day {
     protected Queue<Session> sessions;
     protected String fileName;
 
-    protected WellTrainState isWellTrained = WellTrainState.UNKNOWN;
+    protected WellTrainState isWellTrainedDay = WellTrainState.UNKNOWN;
 
     private enum WellTrainState {
         TRUE, FALSE, UNKNOWN;
@@ -64,13 +64,13 @@ public class Day {
     }
 
     public boolean isWellTrained() {
-        if (this.isWellTrained == WellTrainState.UNKNOWN) {
+        if (this.isWellTrainedDay == WellTrainState.UNKNOWN) {
             throw new IllegalStateException("Welltrain state not tested.");
         }
-        return this.isWellTrained == WellTrainState.TRUE;
+        return this.isWellTrainedDay == WellTrainState.TRUE;
     }
 
-    public void testForWellTrainState() {
+    public void testForWellTrainDay() {
         LinkedList<Trial> consecutive = new LinkedList<>();
         outer:
         for (Session s : this.sessions) {
@@ -87,7 +87,7 @@ public class Day {
                         }
                     }
                     if (sumCorrect >= 32) {
-                        isWellTrained = WellTrainState.TRUE;
+                        isWellTrainedDay = WellTrainState.TRUE;
                         break outer;
                     } else {
                         consecutive.pop();
@@ -95,8 +95,8 @@ public class Day {
                 }
             }
         }
-        if (this.isWellTrained == WellTrainState.UNKNOWN) {
-            this.isWellTrained = WellTrainState.FALSE;
+        if (this.isWellTrainedDay == WellTrainState.UNKNOWN) {
+            this.isWellTrainedDay = WellTrainState.FALSE;
         }
     }
 }

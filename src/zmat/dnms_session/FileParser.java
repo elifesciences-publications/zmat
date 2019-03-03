@@ -52,8 +52,11 @@ public class FileParser {
             int lastLick = 0;
             int type = 0;
             int val = 0;
-            int samplePort=0;
-            int testPort=0;
+            int samplePort = 0;
+            int testPort = 0;
+            int laserTType=-1;
+            int laserOnset=Integer.MAX_VALUE;
+            int laserOffset=Integer.MAX_VALUE;
             for (int[] evt : eventList) {
                 if (evt.length == 5) {
                     type = evt[2];
@@ -94,15 +97,21 @@ public class FileParser {
                         int respPos = type > 7 ? 4 : type - 4;
                         response = responses[respPos];
                         if (firstOdor != EventType.unknown && secondOdor != EventType.unknown) {
-                            Trial newTrial=new Trial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start);
+                            Trial newTrial = new Trial(firstOdor, secondOdor, response, laserOn, licks, delayLength, odor2Start);
                             newTrial.setSamplePort(samplePort);
                             newTrial.setTestPort(testPort);
+                            newTrial.setTrialLaserType(laserTType);
+                            newTrial.setLaserOnset(laserOnset);
+                            newTrial.setLaserOffset(laserOffset);
                             currentTrials.offer(newTrial);
                         }
                         firstOdor = EventType.unknown;
                         secondOdor = EventType.unknown;
 //                        licks = new ArrayList<>();
                         laserOn = false;
+                        laserTType=-1;
+                        laserOnset=Integer.MAX_VALUE;
+                        laserOffset=Integer.MAX_VALUE;
                         break;
                     case 9:
                     case 10:
@@ -111,23 +120,33 @@ public class FileParser {
                                 firstOdor = odors[type - 9];
 //                                licks = new ArrayList<>();
                                 trialStart = evt[0];
-                                samplePort=val;
+                                samplePort = val;
                             } else {
                                 secondOdor = odors[type - 9];
                                 odor2Start = evt[0];
                                 delayLength = evt[0] - trialStart - 1000;
-                                testPort=val;
+                                testPort = val;
                             }
                         }
                         break;
                     case 65:
                         laserOn = (val == 1);
+                        if (!licks.isEmpty()) {
+                            licks = new ArrayList<>();
+                        }
                         break;
                     case 58:
-                    case 59:
-
-                        licks = new ArrayList<>();
-
+                        laserTType=val;
+                        if (!licks.isEmpty()) {
+                            licks = new ArrayList<>();
+                        }
+                        break;
+                    case 79:
+                        if(val!=0){
+                            laserOnset=evt[0];
+                        }else{
+                            laserOffset=evt[0];
+                        }
                         break;
                 }
             }
